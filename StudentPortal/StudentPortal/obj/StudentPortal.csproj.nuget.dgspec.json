@@ -50,9 +50,25 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "EntityFramework": {
+              "target": "Package",
+              "version": "[6.5.1, )"
+            },
+            "MailKit": {
+              "target": "Package",
+              "version": "[4.12.1, )"
+            },
+            "Microsoft.AspNetCore.DataProtection": {
+              "target": "Package",
+              "version": "[9.0.5, )"
+            },
             "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore": {
               "target": "Package",
               "version": "[8.0.16, )"
+            },
+            "Microsoft.AspNetCore.Identity": {
+              "target": "Package",
+              "version": "[2.3.1, )"
             },
             "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
               "target": "Package",
@@ -64,19 +80,29 @@
             },
             "Microsoft.EntityFrameworkCore.SqlServer": {
               "target": "Package",
-              "version": "[8.0.16, )"
+              "version": "[9.0.5, )"
             },
             "Microsoft.EntityFrameworkCore.Sqlite": {
               "target": "Package",
               "version": "[8.0.11, )"
             },
             "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
               "target": "Package",
-              "version": "[8.0.16, )"
+              "version": "[9.0.5, )"
+            },
+            "Microsoft.Extensions.Identity.Core": {
+              "target": "Package",
+              "version": "[9.0.5, )"
             },
             "Microsoft.VisualStudio.Web.CodeGeneration.Design": {
               "target": "Package",
               "version": "[8.0.7, )"
+            },
+            "MimeKit": {
+              "target": "Package",
+              "version": "[4.12.0, )"
             }
           },
           "imports": [
