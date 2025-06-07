@@ -7,12 +7,12 @@ namespace StudentPortal.ViewModels
         //[Display(Name = "Cod Inregistrare")]
         //[Required(ErrorMessage = "Cod required.")]
         public string? RegistrationToken { get; set; }
-        [Required(ErrorMessage = "Campul trebuie completat")]
+        [Required(ErrorMessage = "Password required.")]
         [DataType(DataType.Password)]
         public string Password { get; set; }
-        [Required(ErrorMessage = "Parolele nu corespund")]
+        [Required(ErrorMessage = "Password required.")]
         [DataType(DataType.Password)]
-        [Compare(nameof(Password), ErrorMessage = "Parolele nu corespund")]
+        [Compare(nameof(Password), ErrorMessage = "Passwords do not match.")]
         public string RepeatPassword { get; set; }
 
         [Display(Name = "Name")]

@@ -1,5 +1,5 @@
 ﻿
-using StudentPortal.ViewModels; // Ensure this using directive is present at the top of the file
+using StudentPortal.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using StudentPortal.Interfaces;
@@ -52,7 +52,7 @@ namespace StudentPortal.Controllers
         {
             if (User.Identity.IsAuthenticated)
             {
-                var user = await _userManager.FindByNameAsync(User.Identity.Name);
+                var user = await _userManager.FindByNameAsync(" fdasasd fasdfa");
                 var res2 = await _userManager.GetRolesAsync(user);
                 string role = string.Join(", ", res2);
                 if (role == "teacher")
