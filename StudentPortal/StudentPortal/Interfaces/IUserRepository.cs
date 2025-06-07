@@ -6,10 +6,11 @@ namespace StudentPortal.Interfaces
     {
         Task<IEnumerable<User>> GetAllUsersAsync();
         Task<User?> GetUserByIdAsync(int id);
-
         bool Add(User user);
         bool Update(User user);
         bool Delete(User user);
         bool SaveChanges();
+        string GetIdByEmail(string email);
+        string GetIdByRegistrationToken(string token);
     }
 }

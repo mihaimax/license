@@ -12,14 +12,21 @@ namespace StudentPortal.Models
         [Required]
         public string? Surname { get; set; }
 
-        public enum Status
+        public enum Function
         {
             Student,
             Teacher,
             Admin
         }
 
-        public Status _status { get; set; }
+        public Function? _function { get; set; }
+        public enum AccountStatus
+        {
+            Active,
+            PendingActivation,
+            Blocked
+        }
+        public AccountStatus? _accountStatus { get; set; }
 
         public string? RegistrationToken { get; set; }
 
@@ -29,17 +36,6 @@ namespace StudentPortal.Models
 
         public string? Address { get; set; }
 
-        public string? PhoneNumber { get; set; }
-
         public string? CNP { get; set; }
-
-        public string Email { get; set; }
-
-        [Key]
-        public int Id { get; set; }
-
-
-
-
     }
 }

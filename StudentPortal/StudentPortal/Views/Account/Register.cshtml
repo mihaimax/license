@@ -1,0 +1,86 @@
+﻿@using StudentPortal.ViewModels
+@model StudentPortal.ViewModels.RegisterViewModel
+@{
+    Layout = null;
+    ViewData["Title"] = "Register";
+}
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register - Facultatea XYZ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #eafaf1, #cce8d8);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center">
+    <div class="bg-white shadow-lg rounded-2xl p-8 w-full max-w-md">
+        <h2 class="text-2xl font-semibold text-center text-green-700 mb-6">Înregistrare - Portal Studenți</h2>
+
+        @if (ViewData.ModelState.ErrorCount > 0)
+        {
+            <div class="mb-4 text-red-600 text-sm">
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <div>@error.ErrorMessage</div>
+                }
+            </div>
+        }
+
+        <form asp-action="Register" asp-controller="Account" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="RegistrationToken" />
+
+            <div class="mb-4">
+                <label asp-for="Name" class="block text-sm font-medium text-gray-700">Name</label>
+                <input name="Name" asp-for="Name" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-400 focus:border-green-500" required />
+                <span asp-validation-for="Name" class="text-red-600 text-xs"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="Surname" class="block text-sm font-medium text-gray-700">Surname</label>
+                <input name="Surname" asp-for="Surname" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-400 focus:border-green-500" required />
+                <span asp-validation-for="Surname" class="text-red-600 text-xs"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="City" class="block text-sm font-medium text-gray-700">City</label>
+                <input name="City" asp-for="City" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-400 focus:border-green-500" required />
+                <span asp-validation-for="City" class="text-red-600 text-xs"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="County" class="block text-sm font-medium text-gray-700">County</label>
+                <input name="County" asp-for="County" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-400 focus:border-green-500" required />
+                <span asp-validation-for="County" class="text-red-600 text-xs"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="Password" class="block text-sm font-medium text-gray-700">Password</label>
+                <input name="Password" asp-for="Password" type="password" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-400 focus:border-green-500" required />
+                <span asp-validation-for="Password" class="text-red-600 text-xs"></span>
+            </div>
+
+            <div class="mb-6">
+                <label asp-for="RepeatPassword" class="block text-sm font-medium text-gray-700">Repeat Password</label>
+                <input name="RepeatPassword" asp-for="RepeatPassword" type="password" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-400 focus:border-green-500" required />
+                <span asp-validation-for="RepeatPassword" class="text-red-600 text-xs"></span>
+            </div>
+
+            <button type="submit"
+                    class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-md transition duration-200">
+                Înregistrare
+            </button>
+        </form>
+    </div>
+    <partial name="_ValidationScriptsPartial" />
+</body>
+
+<style>
+    body {
+        background: linear-gradient(135deg, #d6f5e5, #a8dbc1);
+    }
+</style>

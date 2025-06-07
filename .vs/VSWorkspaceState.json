@@ -1,7 +1,11 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\StudentPortal",
+    "\\StudentPortal\\StudentPortal",
+    "\\StudentPortal\\StudentPortal\\bin",
+    "\\StudentPortal\\StudentPortal\\obj"
   ],
-  "SelectedNode": "\\D:\\license",
+  "SelectedNode": "\\StudentPortal\\StudentPortal.sln",
   "PreviewInSolutionExplorer": false
 }

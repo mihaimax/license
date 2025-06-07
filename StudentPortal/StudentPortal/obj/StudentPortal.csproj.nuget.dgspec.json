@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "D:\\license\\StudentPortal\\StudentPortal\\StudentPortal.csproj": {}
+    "C:\\Users\\Eu\\source\\repos\\license\\StudentPortal\\StudentPortal\\StudentPortal.csproj": {}
   },
   "projects": {
-    "D:\\license\\StudentPortal\\StudentPortal\\StudentPortal.csproj": {
+    "C:\\Users\\Eu\\source\\repos\\license\\StudentPortal\\StudentPortal\\StudentPortal.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\license\\StudentPortal\\StudentPortal\\StudentPortal.csproj",
+        "projectUniqueName": "C:\\Users\\Eu\\source\\repos\\license\\StudentPortal\\StudentPortal\\StudentPortal.csproj",
         "projectName": "StudentPortal",
-        "projectPath": "D:\\license\\StudentPortal\\StudentPortal\\StudentPortal.csproj",
-        "packagesPath": "C:\\Users\\nosti\\.nuget\\packages\\",
-        "outputPath": "D:\\license\\StudentPortal\\StudentPortal\\obj\\",
+        "projectPath": "C:\\Users\\Eu\\source\\repos\\license\\StudentPortal\\StudentPortal\\StudentPortal.csproj",
+        "packagesPath": "C:\\Users\\Eu\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Eu\\source\\repos\\license\\StudentPortal\\StudentPortal\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\nosti\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Eu\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -43,8 +43,7 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        },
-        "SdkAnalysisLevel": "9.0.300"
+        }
       },
       "frameworks": {
         "net8.0": {
@@ -124,7 +123,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.300/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.313/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
