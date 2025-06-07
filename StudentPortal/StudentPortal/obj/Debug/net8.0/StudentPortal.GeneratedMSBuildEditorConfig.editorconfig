@@ -17,25 +17,35 @@ build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = StudentPortal
 build_property.RootNamespace = StudentPortal
-build_property.ProjectDir = D:\license\StudentPortal\StudentPortal\
+build_property.ProjectDir = C:\Users\Eu\source\repos\license\StudentPortal\StudentPortal\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 8.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = D:\license\StudentPortal\StudentPortal
+build_property.MSBuildProjectDirectory = C:\Users\Eu\source\repos\license\StudentPortal\StudentPortal
 build_property._RazorSourceGeneratorDebug = 
-build_property.EffectiveAnalysisLevelStyle = 8.0
-build_property.EnableCodeStyleSeverity = 
 
-[D:/license/StudentPortal/StudentPortal/Views/Account/LogIn.cshtml]
+[C:/Users/Eu/source/repos/license/StudentPortal/StudentPortal/Views/Account/LogIn.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxMb2dJbi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/license/StudentPortal/StudentPortal/Views/Home/Index.cshtml]
+[C:/Users/Eu/source/repos/license/StudentPortal/StudentPortal/Views/Account/Register.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxSZWdpc3Rlci5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Eu/source/repos/license/StudentPortal/StudentPortal/Views/Admin/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Eu/source/repos/license/StudentPortal/StudentPortal/Views/Admin/InviteUser.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cSW52aXRlVXNlci5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Eu/source/repos/license/StudentPortal/StudentPortal/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/license/StudentPortal/StudentPortal/Views/Home/Privacy.cshtml]
+[C:/Users/Eu/source/repos/license/StudentPortal/StudentPortal/Views/Home/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 

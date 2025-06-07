@@ -37,6 +37,16 @@ namespace StudentPortal.Repositories
         {
             return _context.SaveChanges() > 0;
         }
+        public string GetIdByEmail(string email)
+        {
+            var user = _context.Users.FirstOrDefault(u => u.Email == email);
+            return user?.Id.ToString() ?? string.Empty;
+        }
+        public string GetIdByRegistrationToken(string token)
+        {
+            var user = _context.Users.FirstOrDefault(u => u.RegistrationToken == token);
+            return user?.Id.ToString() ?? string.Empty;
+        }
     }
 
 }

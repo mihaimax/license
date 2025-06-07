@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using StudentPortal.Interfaces;
 using StudentPortal.Models;
 using StudentPortal.Repositories;
+using StudentPortal.Classes;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ITeacherRepository, TeacherRepository>();
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
+builder.Services.AddTransient<MailManager>();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -38,6 +40,12 @@ builder.Services.Configure<IdentityOptions>(x =>
 
 var app = builder.Build();
 
+// Seed admin user
+using (var scope = app.Services.CreateScope())
+{
+    await StudentPortal.Data.seed.SeedAdminAsync(scope.ServiceProvider);
+}
+
 // Configure middleware
 if (app.Environment.IsDevelopment())
 {
@@ -59,13 +67,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Account}/{action=Index}/{id?}");
+    pattern: "{controller=Account}/{action=Index}");
 
 app.Run();
-
-// 🔁 Seed data (roluri, admin)
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    await DataSeeder.SeedRolesAndAdminAsync(services);
-}

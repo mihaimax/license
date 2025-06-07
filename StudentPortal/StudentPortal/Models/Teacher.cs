@@ -3,17 +3,17 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace StudentPortal.Models
 {
-    public class Teacher : User
+    public class Teacher
     {
-        [ForeignKey("User")]
-        public int Id { get; set; }
-        public string? Specialization { get; set; }
-        public string? Position { get; set; }
-
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int TeacherId { get; set; }
 
+        [ForeignKey("UserId")]
+        public User? User { get; set; }
+        public string? Position { get; set; }
         public DateTime RegisteredOn { get; set; }
     }
 }
 
+    
