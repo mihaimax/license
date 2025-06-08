@@ -8,6 +8,7 @@ namespace StudentPortal.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int TeacherId { get; set; }
+        public string UserId { get; set; }
 
         [ForeignKey("UserId")]
         public User? User { get; set; }

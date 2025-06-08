@@ -37,5 +37,7 @@ namespace StudentPortal.Models
         public string? Address { get; set; }
 
         public string? CNP { get; set; }
+        public Student? Student { get; set; }
+        public Teacher? Teacher { get; set; }
     }
 }
