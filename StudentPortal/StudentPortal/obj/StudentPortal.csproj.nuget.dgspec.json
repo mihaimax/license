@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Eu\\source\\repos\\license\\StudentPortal\\StudentPortal\\StudentPortal.csproj": {}
+    "C:\\Users\\Sebi\\source\\repos\\license\\StudentPortal\\StudentPortal\\StudentPortal.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Eu\\source\\repos\\license\\StudentPortal\\StudentPortal\\StudentPortal.csproj": {
+    "C:\\Users\\Sebi\\source\\repos\\license\\StudentPortal\\StudentPortal\\StudentPortal.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Eu\\source\\repos\\license\\StudentPortal\\StudentPortal\\StudentPortal.csproj",
+        "projectUniqueName": "C:\\Users\\Sebi\\source\\repos\\license\\StudentPortal\\StudentPortal\\StudentPortal.csproj",
         "projectName": "StudentPortal",
-        "projectPath": "C:\\Users\\Eu\\source\\repos\\license\\StudentPortal\\StudentPortal\\StudentPortal.csproj",
-        "packagesPath": "C:\\Users\\Eu\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Eu\\source\\repos\\license\\StudentPortal\\StudentPortal\\obj\\",
+        "projectPath": "C:\\Users\\Sebi\\source\\repos\\license\\StudentPortal\\StudentPortal\\StudentPortal.csproj",
+        "packagesPath": "C:\\Users\\Sebi\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Sebi\\source\\repos\\license\\StudentPortal\\StudentPortal\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\Eu\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Sebi\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -49,6 +49,10 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "EPPlus": {
+              "target": "Package",
+              "version": "[8.0.5, )"
+            },
             "EntityFramework": {
               "target": "Package",
               "version": "[6.5.1, )"

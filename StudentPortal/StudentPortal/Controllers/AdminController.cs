@@ -1,11 +1,16 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using OfficeOpenXml;
+using StudentPortal.Classes;
 using StudentPortal.Interfaces;
 using StudentPortal.Models;
+using StudentPortal.Services;
 using StudentPortal.ViewModels.Admin;
-using StudentPortal.Classes;
+using static StudentPortal.Models.User;
 
 namespace StudentPortal.Controllers
 {
@@ -19,6 +24,7 @@ namespace StudentPortal.Controllers
         private readonly IStudentRepository _studentRepository;
         private readonly ITeacherRepository _teacherRepository;
         private readonly IConfiguration _configuration;
+        private readonly RegistrationNumberGenerator _regNumberGenerator;
 
         // <summary>
         /// Initializes a new instance of the AdminController class.
@@ -30,7 +36,8 @@ namespace StudentPortal.Controllers
             IUserRepository userRepository,
             IStudentRepository studentRepository,
             ITeacherRepository teacherRepository,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            RegistrationNumberGenerator regNumberGenerator)
         {
             _context = context;
             _userManager = userManager;
@@ -39,6 +46,7 @@ namespace StudentPortal.Controllers
             _studentRepository = studentRepository;
             _teacherRepository = teacherRepository;
             _configuration = configuration;
+            _regNumberGenerator = regNumberGenerator;
         }
         public IActionResult Index()
         {
@@ -63,36 +71,209 @@ namespace StudentPortal.Controllers
                     ModelState.AddModelError(string.Empty, "A user with this email already exists.");
                     return View(model);
                 }
-                var user = new User
+                using var transaction = await _context.Database.BeginTransactionAsync();
+                try
                 {
-                    Email = model.Email,
-                    UserName = model.Email,
-                    _accountStatus = Models.User.AccountStatus.PendingActivation,
-                    RegistrationToken = Guid.NewGuid().ToString(),
-                    _function = (User.Function?)model.UserType
-                };
+                    var token = Guid.NewGuid().ToString();
+                    var user = new User
+                    {
+                        Email = model.Email,
+                        Name = "temp",
+                        Surname = "temp",
+                        UserName = model.Email,
+                        _accountStatus = Models.User.AccountStatus.PendingActivation,
+                        RegistrationToken = token,
+                        _function = (User.Function?)model.UserType
+                    };
 
-                var result = await _userManager.CreateAsync(user, Guid.NewGuid().ToString());
-                if (result.Succeeded)
-                {
-                    await SendInvitationEmailAsync(model.Email, user.RegistrationToken);
-                    TempData["Success"] = "The invitation has been successfully sent.";
-                    return View(model);
+                    var userResult = await _userManager.CreateAsync(user, Guid.NewGuid().ToString());
+                    if (!userResult.Succeeded)
+                    {
+                        await transaction.RollbackAsync();
+                        ModelState.AddModelError(string.Empty, "Error while creating user: " + string.Join(", ", userResult.Errors.Select(e => e.Description)));
+                        return View();
+                    }
+
+                    bool relatedEntityCreated = false;
+                    if (user._function == Function.Student)
+                    {
+                        var student = new Student
+                        {
+                            UserId = user.Id,
+                            RegistrationNumber = _regNumberGenerator.GenerateUniqueRegistrationNumber(),
+                        };
+                        _context.Students.Add(student);
+                        relatedEntityCreated = await _context.SaveChangesAsync() > 0;
+                    }
+                    else if (user._function == Function.Teacher)
+                    {
+                        var teacher = new Teacher { UserId = user.Id };
+                        _context.Teachers.Add(teacher);
+                        relatedEntityCreated = await _context.SaveChangesAsync() > 0;
+                    }
+                    if (!relatedEntityCreated)
+                    {
+                        await transaction.RollbackAsync();
+                        ModelState.AddModelError(string.Empty, "Error while creating related entity (student/teacher).");
+                        return View();
+                    }
                 }
-                foreach (var error in result.Errors)
+                catch (Exception ex)
                 {
-                    ModelState.AddModelError(string.Empty, error.Description);
+                    await transaction.RollbackAsync();
+                    ModelState.AddModelError(string.Empty, "An error occurred while processing the invitation: " + ex.Message);
+                    return View();
                 }
             }
             return View(model);
         }
-        private async Task SendInvitationEmailAsync(string toEmail, string registrationToken)
+
+        private async Task<bool> SendInvitationEmailAsync(string toEmail, string registrationToken)
         {
-            var registrationUrl = Url.Action("Register", "Account", new { token = registrationToken }, protocol: Request.Scheme);
-            var subject = "Portal Registration Invitation";
-            var body = $"You have been invited to register. Please click the link to complete your registration: <a href=\"{registrationUrl}\">{registrationUrl}</a>";
-            var mailManager = new MailManager(_configuration);
-            await mailManager.SendEmailAsync(toEmail, subject, body);
+            try
+            {
+                var registrationUrl = Url.Action("Register", "Account", new { token = registrationToken }, protocol: Request.Scheme);
+                var subject = "Portal Registration Invitation";
+                var body = $"You have been invited to register. Please click the link to complete your registration: <a href=\"{registrationUrl}\">{registrationUrl}</a>";
+                var mailManager = new MailManager(_configuration);
+                await mailManager.SendEmailAsync(toEmail, subject, body);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        [HttpGet]
+        public IActionResult InviteUserBulk()
+        {
+            return View(new BulkInviteViewModel());
+        }
+        [HttpPost]
+        public async Task<IActionResult> InviteUserBulk(BulkInviteViewModel model)
+        {
+            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+
+
+            if (model.ExcelFile?.Length > 0)
+            {
+                using var stream = model.ExcelFile.OpenReadStream();
+                using var package = new ExcelPackage(stream);
+                var worksheet = package.Workbook.Worksheets[0];
+
+                var rowCount = worksheet.Dimension?.Rows ?? 0;
+
+                for (int row = 2; row <= rowCount + 1; row++)
+                {
+                    var email = worksheet.Cells[row, 1].Value?.ToString()?.Trim();
+                    var userTypeStr = worksheet.Cells[row, 2].Value?.ToString()?.Trim();
+
+                    var result = new BulkInviteViewModel.InviteResult
+                    {
+                        Email = email ?? string.Empty,
+                        UserType = Enum.TryParse<Function>(userTypeStr, out var type) ? type : Function.Student
+                    };
+
+                    if (string.IsNullOrEmpty(email))
+                    {
+                        result.IsSuccess = false;
+                        result.Message = "Invalid email address";
+                        model.ProcessedInvites.Add(result);
+                        continue;
+                    }
+
+                    // Check if user already exists
+                    var existingUser = await _userManager.FindByEmailAsync(email);
+                    if (existingUser != null)
+                    {
+                        result.IsSuccess = false;
+                        result.Message = "User already exists";
+                        model.ProcessedInvites.Add(result);
+                        continue;
+                    }
+
+                    using var transaction = await _context.Database.BeginTransactionAsync();
+                    try
+                    {
+                        var token = Guid.NewGuid().ToString();
+                        var user = new User
+                        {
+                            Email = result.Email,
+                            Name = "temp",
+                            Surname = "temp",
+                            UserName = result.Email,
+                            _accountStatus = Models.User.AccountStatus.PendingActivation,
+                            RegistrationToken = token,
+                            _function = result.UserType
+                        };
+
+                        var userResult = await _userManager.CreateAsync(user, Guid.NewGuid().ToString());
+                        if (!userResult.Succeeded)
+                        {
+                            result.IsSuccess = false;
+                            result.Message = "Error while creating user: " + string.Join(", ", userResult.Errors.Select(e => e.Description));
+                            await transaction.RollbackAsync();
+                            model.ProcessedInvites.Add(result);
+                            continue;
+                        }
+
+                        // Create related entity
+                        bool relatedEntityCreated = false;
+                        if (result.UserType == Function.Student)
+                        {
+                            var student = new Student 
+                            { 
+                                UserId = user.Id,
+                                RegistrationNumber = _regNumberGenerator.GenerateUniqueRegistrationNumber(),
+                            };
+                            _context.Students.Add(student);
+                            relatedEntityCreated = await _context.SaveChangesAsync() > 0;
+                        }
+                        else if (result.UserType == Function.Teacher)
+                        {
+                            var teacher = new Teacher { UserId = user.Id };
+                            _context.Teachers.Add(teacher);
+                            relatedEntityCreated = await _context.SaveChangesAsync() > 0;
+                        }
+                        if (!relatedEntityCreated)
+                        {
+                            await transaction.RollbackAsync();
+                            result.IsSuccess = false;
+                            result.Message = "Error while creating related entity (student/teacher).";
+                            model.ProcessedInvites.Add(result);
+                            continue;
+                        }
+
+                        var invitationSent = await SendInvitationEmailAsync(user.Email, user.RegistrationToken);
+                        if (invitationSent)
+                        {
+                            await transaction.CommitAsync();
+                            result.IsSuccess = true;
+                            result.Message = "Invitation sent successfully";
+                        }
+                        else
+                        {
+                            await transaction.RollbackAsync();
+                            result.IsSuccess = false;
+                            result.Message = "Error sending invitation email.";
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        await transaction.RollbackAsync();
+                        result.IsSuccess = false;
+                        result.Message = "Error processing invitation: " + ex.Message;
+                    }
+
+                    model.ProcessedInvites.Add(result);
+                }
+            }
+            return View(model);
+        }
+        [HttpGet]
+        public IActionResult TimeTables()
+        {
+            return View(new TimeTablesViewModel());
         }
     }
 }

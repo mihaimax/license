@@ -1,12 +1,11 @@
-﻿
-using StudentPortal.ViewModels;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using StudentPortal.Interfaces;
 using StudentPortal.Models;
 using static StudentPortal.Models.User;
 using StudentPortal.Repositories;
 using System.Drawing;
+using StudentPortal.ViewModels.Account;
 namespace StudentPortal.Controllers
 
 {
@@ -15,6 +14,7 @@ namespace StudentPortal.Controllers
         private readonly ApplicationDbContext _context;
         private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IUserRepository _userRepository;
         private readonly IStudentRepository _studentRepository;
         private readonly ITeacherRepository _teacherRepository;
@@ -26,6 +26,7 @@ namespace StudentPortal.Controllers
         public AccountController(ApplicationDbContext context,
             UserManager<User> userManager,
             SignInManager<User> signInManager,
+            RoleManager<IdentityRole> roleManager,
             IUserRepository userRepository,
             IStudentRepository studentRepository, 
             ITeacherRepository teacherRepository)
@@ -33,6 +34,7 @@ namespace StudentPortal.Controllers
             _context = context;
             _userManager = userManager;
             _signInManager = signInManager;
+            _roleManager = roleManager;
             _userRepository = userRepository;
             _studentRepository = studentRepository;
             _teacherRepository = teacherRepository;
@@ -52,7 +54,7 @@ namespace StudentPortal.Controllers
         {
             if (User.Identity.IsAuthenticated)
             {
-                var user = await _userManager.FindByNameAsync(" fdasasd fasdfa");
+                var user = await _userManager.FindByNameAsync(User.Identity.Name);
                 var res2 = await _userManager.GetRolesAsync(user);
                 string role = string.Join(", ", res2);
                 if (role == "teacher")
@@ -185,25 +187,56 @@ namespace StudentPortal.Controllers
                 user.Surname = registerViewModel.Surname;
                 user.City = registerViewModel.City;
                 user.County = registerViewModel.County;
-                string userName = user.Name + " " + user.Surname;
-                user.UserName = userName;
                 user.RegistrationToken = "";
                 user._accountStatus = AccountStatus.Active;
                 var token2 = await _userManager.GeneratePasswordResetTokenAsync(user);
                 await _userManager.ResetPasswordAsync(user, token2, registerViewModel.Password);
                 _userRepository.SaveChanges();
-                var newTeacher = new Teacher()
+                var adminRole = "";
+                switch (user._function)
                 {
-                    RegisteredOn = DateTime.Now,
-                    Position = "Teacher",
-                };
-                var newTeacherResponse = _teacherRepository.Add(newTeacher);
-                if (newTeacherResponse)
-                {
-                    _teacherRepository.SaveChanges();
+                    case Function.Student:
+                        adminRole = "Student";
+                        if (!await _roleManager.RoleExistsAsync(adminRole))
+                        {
+                            await _roleManager.CreateAsync(new IdentityRole(adminRole));
+                        }
+                        var newStudent = new Student()
+                        {
+                            UserId = user.Id,
+                            RegisteredOn = DateTime.Now
+                        };
+                        var newStudentResponse = _studentRepository.Add(newStudent);
+                        if (newStudentResponse)
+                        {
+                            _studentRepository.SaveChanges();
+                        }
+                        TempData["Success"] = "Registration complete. You may log in now.";
+                        return View(registerViewModel);
+                    case Function.Teacher:
+                        adminRole = "Teacher";
+                        if (!await _roleManager.RoleExistsAsync(adminRole))
+                        {
+                            await _roleManager.CreateAsync(new IdentityRole(adminRole));
+                        }
+                        var newTeacher = new Teacher()
+                        {
+                            UserId = user.Id,
+                            RegisteredOn = DateTime.Now,
+                            Position = "Teacher",
+                        };
+                        var newTeacherResponse = _teacherRepository.Add(newTeacher);
+                        if (newTeacherResponse)
+                        {
+                            _teacherRepository.SaveChanges();
+                        }
+                        TempData["Success"] = "Registration complete. You may log in now.";
+                        return View(registerViewModel);
+                    default:
+                        ModelState.AddModelError(string.Empty, "Invalid user function.");
+                        return View(registerViewModel);
                 }
-                TempData["Success"] = "Registration complete. You may log in now.";
-                return View(registerViewModel);
+
             }
             else
             {
