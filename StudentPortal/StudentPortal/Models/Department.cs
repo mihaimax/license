@@ -14,7 +14,7 @@ namespace StudentPortal.Models
 
         [Required]
         [ForeignKey(nameof(DepartmentHead))]
-        public int DepartmentHeadId { get; set; }
+        public int? DepartmentHeadId { get; set; }
         public Teacher? DepartmentHead { get; set; }
 
         [NotMapped]

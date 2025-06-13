@@ -1,7 +1,15 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\.github",
+    "\\StudentPortal",
+    "\\StudentPortal\\StudentPortal",
+    "\\StudentPortal\\StudentPortal\\Controllers",
+    "\\StudentPortal\\StudentPortal\\Data",
+    "\\StudentPortal\\StudentPortal\\Interfaces",
+    "\\StudentPortal\\StudentPortal\\Models",
+    "\\StudentPortal\\StudentPortal\\Services"
   ],
-  "SelectedNode": "\\StudentPortal.sln",
+  "SelectedNode": "\\StudentPortal\\StudentPortal.sln",
   "PreviewInSolutionExplorer": false
 }

@@ -8,12 +8,14 @@ namespace StudentPortal.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int TeacherId { get; set; }
+
+        [Required]
         public string UserId { get; set; }
 
-        [ForeignKey("UserId")]
-        public User? User { get; set; }
-        public string? Position { get; set; }
-        public DateTime RegisteredOn { get; set; }
+        [ForeignKey(nameof(UserId))]
+        public User User { get; set; }
+
+        public DateTime RegisteredOn { get; set; } = DateTime.UtcNow;
     }
 }
 

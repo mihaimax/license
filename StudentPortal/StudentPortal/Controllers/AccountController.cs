@@ -190,53 +190,13 @@ namespace StudentPortal.Controllers
                 user.RegistrationToken = "";
                 user._accountStatus = AccountStatus.Active;
                 var token2 = await _userManager.GeneratePasswordResetTokenAsync(user);
-                await _userManager.ResetPasswordAsync(user, token2, registerViewModel.Password);
-                _userRepository.SaveChanges();
-                var adminRole = "";
-                switch (user._function)
-                {
-                    case Function.Student:
-                        adminRole = "Student";
-                        if (!await _roleManager.RoleExistsAsync(adminRole))
-                        {
-                            await _roleManager.CreateAsync(new IdentityRole(adminRole));
-                        }
-                        var newStudent = new Student()
-                        {
-                            UserId = user.Id,
-                            RegisteredOn = DateTime.Now
-                        };
-                        var newStudentResponse = _studentRepository.Add(newStudent);
-                        if (newStudentResponse)
-                        {
-                            _studentRepository.SaveChanges();
-                        }
-                        TempData["Success"] = "Registration complete. You may log in now.";
-                        return View(registerViewModel);
-                    case Function.Teacher:
-                        adminRole = "Teacher";
-                        if (!await _roleManager.RoleExistsAsync(adminRole))
-                        {
-                            await _roleManager.CreateAsync(new IdentityRole(adminRole));
-                        }
-                        var newTeacher = new Teacher()
-                        {
-                            UserId = user.Id,
-                            RegisteredOn = DateTime.Now,
-                            Position = "Teacher",
-                        };
-                        var newTeacherResponse = _teacherRepository.Add(newTeacher);
-                        if (newTeacherResponse)
-                        {
-                            _teacherRepository.SaveChanges();
-                        }
-                        TempData["Success"] = "Registration complete. You may log in now.";
-                        return View(registerViewModel);
-                    default:
-                        ModelState.AddModelError(string.Empty, "Invalid user function.");
-                        return View(registerViewModel);
+                var result = await _userManager.ResetPasswordAsync(user, token2, registerViewModel.Password);
+                if(result.Succeeded)
+                    return View();
+                else {
+                    ModelState.AddModelError(string.Empty, "Error while registering");
+                    return View();
                 }
-
             }
             else
             {

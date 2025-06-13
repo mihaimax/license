@@ -17,6 +17,16 @@ namespace StudentPortal.Data
             {
                 await roleManager.CreateAsync(new IdentityRole(adminRole));
             }
+            var StudentRole = "Student";
+            if (!await roleManager.RoleExistsAsync(StudentRole))
+            {
+                await roleManager.CreateAsync(new IdentityRole(StudentRole));
+            }
+            var TeacherRole = "Teacher";
+            if (!await roleManager.RoleExistsAsync(TeacherRole))
+            {
+                await roleManager.CreateAsync(new IdentityRole(TeacherRole));
+            }
 
             // Create the admin user if it doesn't exist
             var adminEmail = "admin@licenta.ro";

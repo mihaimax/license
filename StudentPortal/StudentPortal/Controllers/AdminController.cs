@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using OfficeOpenXml;
 using StudentPortal.Classes;
+using StudentPortal.Data;
 using StudentPortal.Interfaces;
 using StudentPortal.Models;
 using StudentPortal.Services;
@@ -52,12 +53,6 @@ namespace StudentPortal.Controllers
         {
             return View();
         }
-        [HttpGet]
-        public IActionResult InviteUser()
-        {
-            var response = new InviteUserViewModel();
-            return View(response);
-        }
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> InviteUser(InviteUserViewModel model)
@@ -86,13 +81,26 @@ namespace StudentPortal.Controllers
                         _function = (User.Function?)model.UserType
                     };
 
+
                     var userResult = await _userManager.CreateAsync(user, Guid.NewGuid().ToString());
                     if (!userResult.Succeeded)
                     {
-                        await transaction.RollbackAsync();
-                        ModelState.AddModelError(string.Empty, "Error while creating user: " + string.Join(", ", userResult.Errors.Select(e => e.Description)));
-                        return View();
+                        ModelState.AddModelError(string.Empty, "Error while creating user");
+                        return View(model);
                     }
+                    switch (model.UserType.ToString())
+                    {
+                        case "Student":
+                            await _userManager.AddToRoleAsync(user, UserRoles.Student);
+                            break;
+                        case "Teacher":
+                            await _userManager.AddToRoleAsync(user, UserRoles.Teacher);
+                            break;
+                        default:
+                            ModelState.AddModelError(string.Empty, "Error while applying role.");
+                            break;
+                    }
+                    await _context.SaveChangesAsync();
 
                     bool relatedEntityCreated = false;
                     if (user._function == Function.Student)
@@ -101,13 +109,17 @@ namespace StudentPortal.Controllers
                         {
                             UserId = user.Id,
                             RegistrationNumber = _regNumberGenerator.GenerateUniqueRegistrationNumber(),
+                            RegisteredOn = DateTime.Now
                         };
                         _context.Students.Add(student);
                         relatedEntityCreated = await _context.SaveChangesAsync() > 0;
                     }
                     else if (user._function == Function.Teacher)
                     {
-                        var teacher = new Teacher { UserId = user.Id };
+                        var teacher = new Teacher { 
+                            UserId = user.Id,
+                            RegisteredOn = DateTime.Now
+                        };
                         _context.Teachers.Add(teacher);
                         relatedEntityCreated = await _context.SaveChangesAsync() > 0;
                     }
@@ -117,6 +129,19 @@ namespace StudentPortal.Controllers
                         ModelState.AddModelError(string.Empty, "Error while creating related entity (student/teacher).");
                         return View();
                     }
+                    var invitationSent = await SendInvitationEmailAsync(user.Email, user.RegistrationToken);
+                    if (invitationSent)
+                    {
+                        await transaction.CommitAsync();
+                        TempData["Success"] = "Invitation sent.";
+                        return View();
+                    }
+                    else
+                    {
+                        await transaction.RollbackAsync();
+                        ModelState.AddModelError(string.Empty, "An error occurred while sending the invitation");
+                        return View();
+                    }//Message = "The INSERT statement conflicted with the FOREIGN KEY constraint \"FK_AspNetUserRoles_AspNetUsers_UserId\". The conflict occurred in database \"License\", table \"dbo.AspNetUsers\", column 'Id'.\r\nThe statement has been terminated."
                 }
                 catch (Exception ex)
                 {
@@ -274,6 +299,147 @@ namespace StudentPortal.Controllers
         public IActionResult TimeTables()
         {
             return View(new TimeTablesViewModel());
+        }
+        [HttpGet]
+        public IActionResult Departments()
+        {
+            var departments = _context.Departments
+                .Select(d => new DepartmentViewModel
+                {
+                    DepartmentCode = d.DepartmentCode,
+                    DepartmentName = d.DepartmentName,
+                    DepartmentHead = d.DepartmentHead != null
+                        ? (d.DepartmentHead is string ? d.DepartmentHeadName : d.DepartmentHead.ToString())
+                        : null,
+                    Phone = d.Phone
+                })
+                .ToList();
+
+            var response = new DepartmentsViewModel
+            {
+                Department = departments
+            };
+
+            return View(response);
+        }
+        [HttpGet]
+        public IActionResult AddDepartment()
+        {
+            var response = new DepartmentViewModel();
+            return View(response);
+        }
+        [HttpPost]
+        public IActionResult AddDepartment(DepartmentViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                // Find the Teacher by DepartmentHeadId
+                var teacher = _context.Teachers.FirstOrDefault(t => t.TeacherId == model.DepartmentHeadId);
+                if (teacher == null)
+                {
+                    ModelState.AddModelError(nameof(model.DepartmentHeadId), "Selected department head does not exist.");
+                    return View(model);
+                }
+
+                var department = new Department
+                {
+                    DepartmentCode = model.DepartmentCode,
+                    DepartmentName = model.DepartmentName,
+                    DepartmentHeadId = model.TeacherId,
+                    Phone = model.Phone,
+
+                };
+
+                _context.Departments.Add(department);
+                _context.SaveChanges();
+                TempData["Success"] = "Department added successfully.";
+                return RedirectToAction("Departments");
+            }
+            return View(model);
+        }
+        [HttpGet]
+        public IActionResult Subjects()
+        {
+            var subjects = _context.Subjects
+                .Select(s => new SubjectViewModel
+                {
+                    SubjectCode = s.SubjectCode,
+                    SubjectName = s.SubjectName,
+                    DepartmentCode = s.DepartmentCode,
+                    MinAttendancePercentage = s.MinimumAttendancePercentage,
+                    MinExamPercentage = s.MinimumExamPercentage,
+                    MinLabPercentage = s.MinimumProjectPercentage,
+                    Credits = s.Credits
+                })
+                .ToList();
+
+            var response = new SubjectsViewModel
+            {
+                Subjects = subjects
+            };
+
+            return View(response);
+        }
+        [HttpGet]
+        public IActionResult AddSubject()
+        {
+            var response = new SubjectsViewModel();
+            return View(response);
+        }
+        [HttpGet]
+        public IActionResult Users()
+        {
+            var users = _context.Users
+                .Select(u => new UserViewModel
+                {
+                    UserId = u.Id, // <-- Make sure this is included!
+                    UserName = u.UserName,
+                    Name = u.Name,
+                    Surname = u.Surname,
+                    City = u.City,
+                    County = u.County,
+                    Address = u.Address,
+                    CNP = u.CNP,
+                    Function = (UserFunction?)u._function,
+                    AccountStatus = (ViewModels.Admin.AccountStatus?)u._accountStatus
+                })
+                .ToList();
+
+            var response = new UsersViewModel
+            {
+                Users = users
+            };
+
+            return View(response);
+        }
+        [HttpGet]
+        public IActionResult InviteUser()
+        {
+            var response = new InviteUserViewModel();
+            return View(response);
+        }
+        [HttpGet]
+        public IActionResult UserCard(string userId)
+        {
+            var user = _context.Users.FirstOrDefault(u => u.Id == userId);
+            if (user == null)
+                return NotFound();
+
+            var model = new UserViewModel
+            {
+                UserId = user.Id,
+                UserName = user.UserName,
+                Name = user.Name,
+                Surname = user.Surname,
+                City = user.City,
+                County = user.County,
+                Address = user.Address,
+                CNP = user.CNP,
+                Function = (UserFunction?)user._function,
+                AccountStatus = (ViewModels.Admin.AccountStatus?)user._accountStatus
+            };
+
+            return View("UserCard", model);
         }
     }
 }
