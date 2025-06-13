@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Sebi\\source\\repos\\license\\StudentPortal\\StudentPortal\\StudentPortal.csproj": {}
+    "D:\\repos\\license\\StudentPortal\\StudentPortal\\StudentPortal.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Sebi\\source\\repos\\license\\StudentPortal\\StudentPortal\\StudentPortal.csproj": {
+    "D:\\repos\\license\\StudentPortal\\StudentPortal\\StudentPortal.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Sebi\\source\\repos\\license\\StudentPortal\\StudentPortal\\StudentPortal.csproj",
+        "projectUniqueName": "D:\\repos\\license\\StudentPortal\\StudentPortal\\StudentPortal.csproj",
         "projectName": "StudentPortal",
-        "projectPath": "C:\\Users\\Sebi\\source\\repos\\license\\StudentPortal\\StudentPortal\\StudentPortal.csproj",
-        "packagesPath": "C:\\Users\\Sebi\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Sebi\\source\\repos\\license\\StudentPortal\\StudentPortal\\obj\\",
+        "projectPath": "D:\\repos\\license\\StudentPortal\\StudentPortal\\StudentPortal.csproj",
+        "packagesPath": "C:\\Users\\merro\\.nuget\\packages\\",
+        "outputPath": "D:\\repos\\license\\StudentPortal\\StudentPortal\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\Sebi\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\merro\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
