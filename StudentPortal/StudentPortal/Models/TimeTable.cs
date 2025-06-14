@@ -26,10 +26,11 @@ namespace StudentPortal.Models
         public Subject? Subject { get; set; }
         [Required]
         [StringLength(100)]
-        public string Weekdays { get; set; } = null!;
+        public string Weekday { get; set; } = null!;
         [Required]
-        [StringLength(20)]
-        public string TimeInterval { get; set; } = null!;
+        public TimeOnly StartTime { get; set; }
+        [Required]
+        public TimeOnly EndTime { get; set; }
 
         [Required]
         public bool IsLab { get; set; }
@@ -41,5 +42,6 @@ namespace StudentPortal.Models
         [ForeignKey(nameof(CourseTeacher))]
         public int? CourseTeacherId { get; set; }
         public Teacher? CourseTeacher { get; set; }
+        public string Specialization { get; set; } = null!;
     }
 }

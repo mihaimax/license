@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace StudentPortal.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250614162506_modify-timetable")]
+    partial class modifytimetable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -453,18 +456,11 @@ namespace StudentPortal.Data.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("Weekday")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<TimeOnly>("StartTime")
-                        .HasColumnType("time");
+                    b.Property<int?>("CourseTeacherId")
+                        .HasColumnType("int");
 
                     b.Property<TimeOnly>("EndTime")
                         .HasColumnType("time");
-
-                    b.Property<int?>("CourseTeacherId")
-                        .HasColumnType("int");
 
                     b.Property<bool>("IsLab")
                         .HasColumnType("bit");
@@ -476,7 +472,15 @@ namespace StudentPortal.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("DepartmentCode", "Year", "Semester", "SubjectCode", "Weekday", "StartTime", "EndTime");
+                    b.Property<TimeOnly>("StartTime")
+                        .HasColumnType("time");
+
+                    b.Property<string>("Weekday")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("DepartmentCode", "Year", "Semester", "SubjectCode");
 
                     b.HasIndex("CourseTeacherId");
 

@@ -87,6 +87,9 @@ public class ApplicationDbContext : IdentityDbContext<User>
             .HasForeignKey(tt => tt.CourseTeacherId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        modelBuilder.Entity<TimeTable>()
+            .HasKey(t => new { t.DepartmentCode, t.Year, t.Semester, t.SubjectCode, t.Weekday, t.StartTime, t.EndTime });
+
         // Assignment: Student is optional, restrict delete
         modelBuilder.Entity<Assignment>()
             .HasOne(a => a.Student)

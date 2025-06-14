@@ -1,43 +1,38 @@
-﻿using StudentPortal.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using StudentPortal.Data;
+using StudentPortal.Interfaces;
 using StudentPortal.Models;
-using System.Data.Entity;
+
 namespace StudentPortal.Repositories
 {
     public class TeacherRepository : ITeacherRepository
     {
         private readonly ApplicationDbContext _context;
-        public TeacherRepository(ApplicationDbContext context)
-        {
-            _context = context;
-        }
-        public async Task<IEnumerable<Teacher>> GetAllTeachersAsync()
-        {
-            return await _context.Teachers.ToListAsync();
-        }
-        public async Task<Teacher?> GetTeacherByIdAsync(int id)
-        {
-            return await _context.Teachers.FindAsync(id);
-        }
-        public bool Add(Teacher teacher)
+        public TeacherRepository(ApplicationDbContext context) => _context = context;
+
+        public async Task<Teacher?> GetByIdAsync(int teacherId)
+            => await _context.Teachers.FirstOrDefaultAsync(t => t.TeacherId == teacherId);
+
+        public async Task<List<Teacher>> GetAllAsync()
+            => await _context.Teachers.ToListAsync();
+
+
+        public async Task<bool> AddAsync(Teacher teacher)
         {
             _context.Teachers.Add(teacher);
-            return SaveChanges();
+            return await _context.SaveChangesAsync() > 0;
         }
-        public bool Update(Teacher teacher)
+        public async Task<bool> SaveChangesAsync()
         {
-            _context.Teachers.Update(teacher);
-            return SaveChanges();
+            return await _context.SaveChangesAsync() > 0;
         }
-        public bool Delete(Teacher teacher)
-        {
-            _context.Teachers.Remove(teacher);
-            return SaveChanges();
-        }
-        public bool SaveChanges()
-        {
-            return _context.SaveChanges() > 0;
-        }
+
+        // Fix for CS0535: Implementing GetAllTeachersAsync
+        public async Task<IEnumerable<Teacher>> GetAllTeachersAsync()
+            => await _context.Teachers.ToListAsync();
+
+        // Fix for CS0535: Implementing GetTeacherByIdAsync
+        public async Task<Teacher?> GetTeacherByIdAsync(int id)
+            => await _context.Teachers.FirstOrDefaultAsync(t => t.TeacherId == id);
     }
-
-
 }

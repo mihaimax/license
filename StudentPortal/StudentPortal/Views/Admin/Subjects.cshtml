@@ -7,7 +7,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Subjects - Facultatea XYZ</title>
+    <title>Subjects - Maxiversity</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
@@ -46,33 +46,56 @@
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Min Exam %</th>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Min Lab %</th>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Credits</th>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Course Teacher Id</th>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Lab Teacher Id</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-                    @if (Model.Subjects != null && Model.Subjects.Any())
+                    @if (Model.Subject != null && Model.Subject.Any())
                     {
-                        foreach (var s in Model.Subjects)
+                        foreach (var s in Model.Subject)
                         {
                             <tr class="hover:bg-green-50 cursor-pointer">
-                                <td class="px-4 py-2">@s.SubjectCode</td>
+                                <td class="px-4 py-2">
+                                    <a href="@Url.Action("SubjectCard", "Admin", new { subjectCode = s.SubjectCode })"
+                                       class="text-green-700 hover:underline font-semibold">
+                                        @s.SubjectCode
+                                    </a>
+                                </td>
                                 <td class="px-4 py-2">@s.SubjectName</td>
                                 <td class="px-4 py-2">@s.DepartmentCode</td>
                                 <td class="px-4 py-2">@s.MinAttendancePercentage</td>
                                 <td class="px-4 py-2">@s.MinExamPercentage</td>
                                 <td class="px-4 py-2">@s.MinLabPercentage</td>
                                 <td class="px-4 py-2">@s.Credits</td>
+                                <td class="px-4 py-2">@s.CourseTeacherId</td>
+                                <td class="px-4 py-2">@s.LabTeacherId</td>
                             </tr>
                         }
                     }
                     else
                     {
                         <tr>
-                            <td colspan="7" class="px-4 py-4 text-center text-gray-500">No subjects found.</td>
+                            <td colspan="9" class="px-4 py-4 text-center text-gray-500">No subjects found.</td>
                         </tr>
                     }
                 </tbody>
             </table>
         </div>
+        @if (Model.ImportResults != null && Model.ImportResults.Any())
+        {
+            <div class="mb-4 mt-6 w-full text-left">
+                <h4 class="font-extrabold text-xl text-green-700">Import Results</h4>
+                <ul>
+                    @foreach (var result in Model.ImportResults)
+                    {
+                        <li class="@(result.IsSuccess ? "text-green-600" : "text-red-600")">
+                            Row @(result.RowNumber - 1): @result.Message
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
     </div>
 
     <!-- Import Modal -->
@@ -82,11 +105,13 @@
                 <h3 class="text-lg font-semibold text-green-700">Import Subjects</h3>
                 <button type="button" id="closeImportModal" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
             </div>
-            <form asp-action="ImportSubjects" asp-controller="Admin" method="post" enctype="multipart/form-data">
+            <form action="/Admin/ImportSubjects" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
                 <div class="mb-4">
-                    <label for="excelFile" class="block text-sm font-medium text-gray-700 mb-2">Select Excel file</label>
-                    <input type="file" name="excelFile" id="excelFile" accept=".xlsx,.xls"
+                    <label for="ExcelFile" class="block text-sm font-medium text-gray-700 mb-2">Select Excel file</label>
+                    <input type="file" name="ExcelFile" id="ExcelFile" asp-for="ExcelFile" accept=".xlsx,.xls"
                            class="block w-full text-sm text-gray-700 border border-gray-300 rounded-md p-2" required />
+                    <span asp-validation-for="ExcelFile" class="text-red-600 text-sm"></span>
                 </div>
                 <div class="flex justify-end gap-2">
                     <button type="button" id="cancelImport" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-md">Cancel</button>

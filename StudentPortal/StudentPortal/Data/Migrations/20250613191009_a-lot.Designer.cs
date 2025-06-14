@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace StudentPortal.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250613191009_a-lot")]
+    partial class alot
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -334,9 +337,6 @@ namespace StudentPortal.Data.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int?>("CourseTeacherId")
-                        .HasColumnType("int");
-
                     b.Property<int>("Credits")
                         .HasColumnType("int");
 
@@ -344,9 +344,6 @@ namespace StudentPortal.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
-
-                    b.Property<int?>("LabTeacherId")
-                        .HasColumnType("int");
 
                     b.Property<decimal>("MinimumAttendancePercentage")
                         .HasPrecision(5)
@@ -366,11 +363,7 @@ namespace StudentPortal.Data.Migrations
 
                     b.HasKey("SubjectCode");
 
-                    b.HasIndex("CourseTeacherId");
-
                     b.HasIndex("DepartmentCode");
-
-                    b.HasIndex("LabTeacherId");
 
                     b.ToTable("Subjects");
                 });
@@ -453,16 +446,6 @@ namespace StudentPortal.Data.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("Weekday")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<TimeOnly>("StartTime")
-                        .HasColumnType("time");
-
-                    b.Property<TimeOnly>("EndTime")
-                        .HasColumnType("time");
-
                     b.Property<int?>("CourseTeacherId")
                         .HasColumnType("int");
 
@@ -472,11 +455,17 @@ namespace StudentPortal.Data.Migrations
                     b.Property<int?>("LabTeacherId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Specialization")
+                    b.Property<string>("TimeInterval")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
-                    b.HasKey("DepartmentCode", "Year", "Semester", "SubjectCode", "Weekday", "StartTime", "EndTime");
+                    b.Property<string>("Weekdays")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("DepartmentCode", "Year", "Semester", "SubjectCode");
 
                     b.HasIndex("CourseTeacherId");
 
@@ -720,27 +709,13 @@ namespace StudentPortal.Data.Migrations
 
             modelBuilder.Entity("StudentPortal.Models.Subject", b =>
                 {
-                    b.HasOne("StudentPortal.Models.Teacher", "CourseTeacher")
-                        .WithMany()
-                        .HasForeignKey("CourseTeacherId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("StudentPortal.Models.Department", "Department")
                         .WithMany()
                         .HasForeignKey("DepartmentCode")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("StudentPortal.Models.Teacher", "LabTeacher")
-                        .WithMany()
-                        .HasForeignKey("LabTeacherId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("CourseTeacher");
-
                     b.Navigation("Department");
-
-                    b.Navigation("LabTeacher");
                 });
 
             modelBuilder.Entity("StudentPortal.Models.Submission", b =>
