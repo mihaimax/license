@@ -1,5 +1,5 @@
-﻿@using StudentPortal.ViewModels.Admin
-@model SubjectsViewModel
+﻿@using StudentPortal.ViewModels
+@model StudentPortal.ViewModels.Admin.SubjectViewModel
 @{
     ViewData["Title"] = "Add Subject";
 }
@@ -19,40 +19,51 @@
     <div class="bg-white shadow-lg rounded-2xl p-8 w-full max-w-lg flex flex-col items-center mt-12">
         <h2 class="text-2xl font-semibold text-green-700 mb-6">Add Subject</h2>
         <form asp-action="AddSubject" method="post" class="w-full space-y-4">
+            @Html.AntiForgeryToken() 
             <div>
                 <label asp-for="SubjectCode" class="block text-sm font-medium text-gray-700">Subject Code</label>
-                <input asp-for="SubjectCode" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500" />
+                <input name="SubjectCode" asp-for="SubjectCode" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500" />
                 <span asp-validation-for="SubjectCode" class="text-red-500 text-xs"></span>
             </div>
             <div>
                 <label asp-for="SubjectName" class="block text-sm font-medium text-gray-700">Subject Name</label>
-                <input asp-for="SubjectName" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500" />
+                <input name="SubjectName" asp-for="SubjectName" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500" />
                 <span asp-validation-for="SubjectName" class="text-red-500 text-xs"></span>
             </div>
             <div>
                 <label asp-for="DepartmentCode" class="block text-sm font-medium text-gray-700">Department Code</label>
-                <input asp-for="DepartmentCode" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500" />
+                <input name="DepartmentCode" asp-for="DepartmentCode" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500" />
                 <span asp-validation-for="DepartmentCode" class="text-red-500 text-xs"></span>
             </div>
             <div>
                 <label asp-for="MinAttendancePercentage" class="block text-sm font-medium text-gray-700">Minimum Attendance Percentage</label>
-                <input asp-for="MinAttendancePercentage" type="number" min="0" max="100" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500" />
+                <input name="MinAttendancePercentage" asp-for="MinAttendancePercentage" type="number" min="0" max="100" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500" />
                 <span asp-validation-for="MinAttendancePercentage" class="text-red-500 text-xs"></span>
             </div>
             <div>
                 <label asp-for="MinExamPercentage" class="block text-sm font-medium text-gray-700">Minimum Exam Percentage</label>
-                <input asp-for="MinExamPercentage" type="number" min="0" max="100" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500" />
+                <input name="MinExamPercentage" asp-for="MinExamPercentage" type="number" min="0" max="100" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500" />
                 <span asp-validation-for="MinExamPercentage" class="text-red-500 text-xs"></span>
             </div>
             <div>
                 <label asp-for="MinLabPercentage" class="block text-sm font-medium text-gray-700">Minimum Lab Percentage</label>
-                <input asp-for="MinLabPercentage" type="number" min="0" max="100" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500" />
+                <input name="MinLabPercentage" asp-for="MinLabPercentage" type="number" min="0" max="100" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500" />
                 <span asp-validation-for="MinLabPercentage" class="text-red-500 text-xs"></span>
             </div>
             <div>
                 <label asp-for="Credits" class="block text-sm font-medium text-gray-700">Credits</label>
-                <input asp-for="Credits" type="number" min="0" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500" />
+                <input name="Credits" asp-for="Credits" type="number" min="0" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500" />
                 <span asp-validation-for="Credits" class="text-red-500 text-xs"></span>
+            </div>
+            <div>
+                <label asp-for="CourseTeacherId" class="block text-sm font-medium text-gray-700">Course Teacher Id</label>
+                <input name="CourseTeacherId" asp-for="CourseTeacherId" type="number" min="1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500" />
+                <span asp-validation-for="CourseTeacherId" class="text-red-500 text-xs"></span>
+            </div>
+            <div>
+                <label asp-for="LabTeacherId" class="block text-sm font-medium text-gray-700">Lab Teacher Id</label>
+                <input name="LabTeacherId" asp-for="LabTeacherId" type="number" min="1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500" />
+                <span asp-validation-for="LabTeacherId" class="text-red-500 text-xs"></span>
             </div>
             <div class="flex justify-end">
                 <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-6 rounded-md transition duration-200">

@@ -34,5 +34,14 @@ namespace StudentPortal.Models
         [Range(0, 100, ErrorMessage = "Minimum project percentage must be between 0 and 100.")]
         [Precision(5)]
         public decimal MinimumProjectPercentage { get; set; } = 50.0m;
+
+        // New properties for CourseTeacher and LabTeacher
+        [ForeignKey(nameof(CourseTeacher))]
+        public int? CourseTeacherId { get; set; }
+        public Teacher? CourseTeacher { get; set; }
+
+        [ForeignKey(nameof(LabTeacher))]
+        public int? LabTeacherId { get; set; }
+        public Teacher? LabTeacher { get; set; }
     }
 }

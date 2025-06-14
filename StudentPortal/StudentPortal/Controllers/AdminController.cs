@@ -308,9 +308,7 @@ namespace StudentPortal.Controllers
                 {
                     DepartmentCode = d.DepartmentCode,
                     DepartmentName = d.DepartmentName,
-                    DepartmentHead = d.DepartmentHead != null
-                        ? (d.DepartmentHead is string ? d.DepartmentHeadName : d.DepartmentHead.ToString())
-                        : null,
+                    DepartmentHeadId = d.DepartmentHeadId,
                     Phone = d.Phone
                 })
                 .ToList();
@@ -334,10 +332,10 @@ namespace StudentPortal.Controllers
             if (ModelState.IsValid)
             {
                 // Find the Teacher by DepartmentHeadId
-                var teacher = _context.Teachers.FirstOrDefault(t => t.TeacherId == model.DepartmentHeadId);
+                var teacher = _context.Teachers.FirstOrDefault(t => t.TeacherId == model.TeacherId);
                 if (teacher == null)
                 {
-                    ModelState.AddModelError(nameof(model.DepartmentHeadId), "Selected department head does not exist.");
+                    ModelState.AddModelError(nameof(model.TeacherId), "Selected department head does not exist.");
                     return View(model);
                 }
 
@@ -345,7 +343,7 @@ namespace StudentPortal.Controllers
                 {
                     DepartmentCode = model.DepartmentCode,
                     DepartmentName = model.DepartmentName,
-                    DepartmentHeadId = model.TeacherId,
+                    DepartmentHeadId = model.TeacherId, 
                     Phone = model.Phone,
 
                 };
@@ -369,13 +367,15 @@ namespace StudentPortal.Controllers
                     MinAttendancePercentage = s.MinimumAttendancePercentage,
                     MinExamPercentage = s.MinimumExamPercentage,
                     MinLabPercentage = s.MinimumProjectPercentage,
-                    Credits = s.Credits
+                    Credits = s.Credits,
+                    CourseTeacherId = s.CourseTeacherId,
+                    LabTeacherId = s.LabTeacherId
                 })
                 .ToList();
 
             var response = new SubjectsViewModel
             {
-                Subjects = subjects
+                Subject = subjects
             };
 
             return View(response);
@@ -383,8 +383,150 @@ namespace StudentPortal.Controllers
         [HttpGet]
         public IActionResult AddSubject()
         {
-            var response = new SubjectsViewModel();
+            var response = new SubjectViewModel();
             return View(response);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddSubject(SubjectViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            // Map the view model to the Subject entity
+            var subject = new Subject
+            {
+                SubjectCode = model.SubjectCode,
+                SubjectName = model.SubjectName,
+                DepartmentCode = model.DepartmentCode,
+                MinimumAttendancePercentage = model.MinAttendancePercentage,
+                MinimumExamPercentage = model.MinExamPercentage,
+                MinimumProjectPercentage = model.MinLabPercentage,
+                Credits = model.Credits,
+                CourseTeacherId = model.CourseTeacherId,
+                LabTeacherId = model.LabTeacherId
+            };
+
+            _context.Subjects.Add(subject);
+            _context.SaveChanges();
+
+            TempData["Success"] = "Subject added successfully.";
+            return RedirectToAction("Subjects");
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ImportSubjects(IFormFile excelFile)
+        {            
+            if (excelFile == null || excelFile.Length == 0)
+            {
+                TempData["Error"] = "Please select a valid Excel file.";
+                return RedirectToAction("Subjects");
+            }
+
+            try
+            {
+                using var transaction = await _context.Database.BeginTransactionAsync();
+                using var stream = excelFile.OpenReadStream();
+                using var package = new ExcelPackage(stream);
+                var worksheet = package.Workbook.Worksheets[0];
+                
+                if (worksheet == null)
+                {
+                    TempData["Error"] = "No worksheet found in the Excel file.";
+                    return RedirectToAction("Subjects");
+                }
+                
+                var rowCount = worksheet.Dimension?.Rows ?? 0;
+                int importCount = 0;
+
+                for (int row = 2; row <= rowCount; row++)
+                {
+                    try
+                    {
+                        // Check for empty rows and skip them
+                        if (worksheet.Cells[row, 1].Value == null)
+                            continue;
+                        
+                        string subjectCode = worksheet.Cells[row, 1].Value?.ToString()?.Trim() ?? string.Empty;
+                        string subjectName = worksheet.Cells[row, 2].Value?.ToString()?.Trim() ?? string.Empty;
+                        string departmentCode = worksheet.Cells[row, 3].Value?.ToString()?.Trim() ?? string.Empty;
+                        
+                        // Skip empty rows
+                        if (string.IsNullOrEmpty(subjectCode) || string.IsNullOrEmpty(subjectName))
+                            continue;
+
+                        // Use Value property instead of Text which can be null
+                        decimal att = 75.0m;
+                        decimal.TryParse(worksheet.Cells[row, 4].Value?.ToString(), out att);
+                        
+                        decimal exam = 50.0m;
+                        decimal.TryParse(worksheet.Cells[row, 5].Value?.ToString(), out exam);
+                        
+                        decimal lab = 50.0m;
+                        decimal.TryParse(worksheet.Cells[row, 6].Value?.ToString(), out lab);
+                        
+                        int credits = 0;
+                        int.TryParse(worksheet.Cells[row, 7].Value?.ToString(), out credits);
+                        
+                        // Create the subject
+                        var subject = new Subject
+                        {
+                            SubjectCode = subjectCode,
+                            SubjectName = subjectName,
+                            DepartmentCode = departmentCode,
+                            MinimumAttendancePercentage = att,
+                            MinimumExamPercentage = exam, 
+                            MinimumProjectPercentage = lab,
+                            Credits = credits,
+                            CourseTeacherId = null, // Set default as null
+                            LabTeacherId = null     // Set default as null
+                        };
+
+                        // Now handle teacher IDs safely
+                        var courseTeacherValue = worksheet.Cells[row, 8].Value;
+                        if (courseTeacherValue != null && int.TryParse(courseTeacherValue.ToString(), out int courseTeacherId) && courseTeacherId > 0)
+                        {
+                            subject.CourseTeacherId = courseTeacherId;
+                        }
+
+                        var labTeacherValue = worksheet.Cells[row, 9].Value;
+                        if (labTeacherValue != null && int.TryParse(labTeacherValue.ToString(), out int labTeacherId) && labTeacherId > 0)
+                        {
+                            subject.LabTeacherId = labTeacherId;
+                        }
+
+                        _context.Subjects.Add(subject);
+                        importCount++;
+                    }
+                    catch (Exception ex)
+                    {
+                        // Log or handle individual row errors but keep processing
+                        // You might want to collect these errors to display to the user
+                        continue;
+                    }
+                }
+
+                if (importCount > 0)
+                {
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+                    
+                    TempData["Success"] = $"{importCount} subjects imported successfully.";
+                }
+                else
+                {
+                    await transaction.RollbackAsync();
+                    TempData["Error"] = "No valid subjects found to import.";
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Import failed: " + ex.Message;
+            }
+
+            return RedirectToAction("Subjects");
         }
         [HttpGet]
         public IActionResult Users()

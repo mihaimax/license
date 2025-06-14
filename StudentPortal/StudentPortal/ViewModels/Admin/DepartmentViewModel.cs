@@ -9,10 +9,9 @@ namespace StudentPortal.ViewModels.Admin
        public string? DepartmentCode { get; set; }
        public string? DepartmentName { get; set; }
        public string? DepartmentHead { get; set; }
+       public int? DepartmentHeadId { get; set; }
        public string? Phone { get; set; }
-        public int DepartmentHeadId { get; set; }
-        public Teacher Teachers { get; set; } = new Teacher();
-        public int? TeacherId { get; set; }
+       public int TeacherId { get; set; }
     }
     public class DepartmentsViewModel
     {
