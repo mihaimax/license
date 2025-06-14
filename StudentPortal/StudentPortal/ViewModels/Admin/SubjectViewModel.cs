@@ -38,10 +38,21 @@ namespace StudentPortal.ViewModels.Admin
 
         // Allow null or positive numbers for teacher IDs
         public int? LabTeacherId { get; set; }
+        public IFormFile? ExcelFile { get; set; }
+
+        public List<RowResult> ProcessedRows { get; set; } = new();
+
+        public class RowResult
+        {
+            public int RowNumber { get; set; }
+            public bool IsSuccess { get; set; }
+            public string Message { get; set; } = string.Empty;
+        }
     }
 
     public class SubjectsViewModel
     {
         public List<SubjectViewModel> Subject { get; set; } = new List<SubjectViewModel>();
+        public List<SubjectViewModel.RowResult>? ImportResults { get; set; }
     }
 }
