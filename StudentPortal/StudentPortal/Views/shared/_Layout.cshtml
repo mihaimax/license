@@ -1,0 +1,39 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"] - Maxiversity</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <nav class="bg-green-700 text-white px-8 py-4 flex items-center justify-between shadow">
+        <a href="/Admin/Index" class="font-bold text-xl tracking-wide hover:underline">Maxiversity</a>
+        <div class="flex flex-wrap gap-4">
+            <a href="/Admin/Index" class="hover:underline">Dashboard</a>
+            <a href="/Admin/Departments" class="hover:underline">Departments</a>
+            <a href="/Admin/AddDepartment" class="hover:underline">Add Department</a>
+            <a href="/Admin/Subjects" class="hover:underline">Subjects</a>
+            <a href="/Admin/AddSubject" class="hover:underline">Add Subject</a>
+            <a href="/Admin/Users" class="hover:underline">Users</a>
+            <a href="/Admin/TimeTables" class="hover:underline">Time Tables</a>
+            <a href="/Admin/InviteUser" class="hover:underline">Invite User</a>
+            <a href="/Admin/InviteUserBulk" class="hover:underline">Bulk Invite</a>
+            <form method="post" action="/Account/Logout" class="inline">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="hover:underline bg-transparent text-white px-0 py-0 rounded shadow-none border-none focus:outline-none">Logout</button>
+            </form>
+        </div>
+    </nav>
+    <main class="flex flex-col items-center justify-center flex-1 min-h-[80vh]">
+        <div class="w-full flex items-center justify-center mt-8">
+            @RenderBody()
+            @RenderSection("Scripts", required: false)
+        </div>
+    </main>
+</body>
+</html>

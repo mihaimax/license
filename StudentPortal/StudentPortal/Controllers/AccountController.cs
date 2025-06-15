@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using StudentPortal.Interfaces;
 using StudentPortal.Models;
-using static StudentPortal.Models.User;
 using StudentPortal.Repositories;
-using System.Drawing;
 using StudentPortal.ViewModels.Account;
+using System.Drawing;
+using static StudentPortal.Models.User;
 namespace StudentPortal.Controllers
 
 {
@@ -204,6 +206,15 @@ namespace StudentPortal.Controllers
                 return View(registerViewModel);
             }
         }
+        
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Index");
+        }
     }
 }
+
 

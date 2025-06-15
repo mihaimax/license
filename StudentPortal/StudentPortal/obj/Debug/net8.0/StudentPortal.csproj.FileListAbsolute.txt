@@ -1363,3 +1363,4 @@ D:\repos\license\StudentPortal\StudentPortal\obj\Debug\net8.0\refint\StudentPort
 D:\repos\license\StudentPortal\StudentPortal\obj\Debug\net8.0\StudentPortal.pdb
 D:\repos\license\StudentPortal\StudentPortal\obj\Debug\net8.0\StudentPortal.genruntimeconfig.cache
 D:\repos\license\StudentPortal\StudentPortal\obj\Debug\net8.0\ref\StudentPortal.dll
+D:\repos\license\StudentPortal\StudentPortal\bin\Debug\net8.0\bundleconfig.json

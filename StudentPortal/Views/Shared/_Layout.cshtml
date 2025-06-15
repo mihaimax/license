@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"] - Maxiversity</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <nav class="bg-green-700 text-white px-8 py-4 flex items-center justify-between shadow">
+        <div class="font-bold text-xl tracking-wide">Maxiversity</div>
+        <div class="flex gap-6">
+            <a href="/Admin/Index" class="hover:underline">Dashboard</a>
+            <a href="/Admin/Departments" class="hover:underline">Departments</a>
+            <a href="/Admin/Subjects" class="hover:underline">Subjects</a>
+            <a href="/Admin/Users" class="hover:underline">Users</a>
+            <a href="/Admin/TimeTables" class="hover:underline">Time Tables</a>
+            <a href="/Admin/InviteUser" class="hover:underline">Invite User</a>
+            <a href="/Admin/InviteUserBulk" class="hover:underline">Bulk Invite</a>
+        </div>
+    </nav>
+    <main class="container mx-auto mt-8">
+        @RenderBody()
+    </main>
+</body>
+</html> 
