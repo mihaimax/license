@@ -1,6 +1,6 @@
 ﻿using StudentPortal.Models;
 
-namespace StudentPortal.Services
+namespace StudentPortal.Classes
 {
     public class RegistrationNumberGenerator
     {

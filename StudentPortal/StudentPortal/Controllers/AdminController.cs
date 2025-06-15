@@ -6,8 +6,8 @@ using StudentPortal.Classes;
 using StudentPortal.Data;
 using StudentPortal.Interfaces;
 using StudentPortal.Models;
-using StudentPortal.Services;
 using StudentPortal.ViewModels.Admin;
+using StudentPortal.Classes;
 using static StudentPortal.Models.User;
 using static StudentPortal.ViewModels.Admin.TimeTableViewModel;
 
