@@ -6,7 +6,6 @@ using StudentPortal.Classes;
 using StudentPortal.Interfaces;
 using StudentPortal.Models;
 using StudentPortal.Repositories;
-using StudentPortal.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
