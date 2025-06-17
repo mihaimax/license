@@ -52,7 +52,6 @@ namespace StudentPortal.Repositories
                     SubjectName = t.Subject != null ? t.Subject.SubjectName : null,
                     IsLab = t.IsLab,
                     LabTeacherName = t.LabTeacher != null ? t.LabTeacher.User.Name + " " + t.LabTeacher.User.Surname : null,
-                    // Add more properties as needed
                 })
                 .ToListAsync();
         }

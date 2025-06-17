@@ -7,14 +7,15 @@ namespace StudentPortal.ViewModels.Admin
 
     public class DepartmentViewModel
     {
-       public string? DepartmentCode { get; set; }
-       public string? DepartmentName { get; set; }
-       public string? DepartmentHead { get; set; }
-       public int? DepartmentHeadId { get; set; }
-       public string? Phone { get; set; }
-       public int TeacherId { get; set; }
-       public IFormFile? ExcelFile { get; set; }
-        public List<RowResult> ProcessedRows { get; set; } = new();
+        public string? DepartmentCode { get; set; }
+        public string? DepartmentName { get; set; }
+        public string? DepartmentHead { get; set; }
+        public int? DepartmentHeadId { get; set; }
+        public string? Phone { get; set; }
+        public int TeacherId { get; set; }
+        public IFormFile? ExcelFile { get; set; }
+        public List<DepartmentViewModel.RowResult> ProcessedRows { get; set; }
+
         public class RowResult
         {
             public int RowNumber { get; set; }
