@@ -10,6 +10,7 @@ using StudentPortal.ViewModels.Admin;
 using StudentPortal.Classes;
 using static StudentPortal.Models.User;
 using static StudentPortal.ViewModels.Admin.TimeTableViewModel;
+using StudentPortal.Views.Admin;
 
 namespace StudentPortal.Controllers
 {
@@ -61,7 +62,7 @@ namespace StudentPortal.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> InviteUser(InviteUserViewModel model)
+        public async Task<IActionResult> InviteUser(UserViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -83,7 +84,7 @@ namespace StudentPortal.Controllers
                         UserName = model.Email,
                         _accountStatus = Models.User.AccountStatus.PendingActivation,
                         RegistrationToken = token,
-                        _function = (User.Function?)model.UserType
+                        _function = (User.Function?)model.Function 
                     };
 
                     var userResult = await _userManager.CreateAsync(user, Guid.NewGuid().ToString());
@@ -92,7 +93,7 @@ namespace StudentPortal.Controllers
                         ModelState.AddModelError(string.Empty, "Error while creating user");
                         return View(model);
                     }
-                    switch (model.UserType.ToString())
+                    switch (model.Function.ToString())
                     {
                         case "Student":
                             await _userManager.AddToRoleAsync(user, UserRoles.Student);
@@ -173,127 +174,162 @@ namespace StudentPortal.Controllers
             }
         }
 
-        [HttpGet]
-        public IActionResult InviteUserBulk()
-        {
-            return View(new BulkInviteViewModel());
-        }
-
         [HttpPost]
-        public async Task<IActionResult> InviteUserBulk(BulkInviteViewModel model)
+        public async Task<IActionResult> InviteUserBulk(UserViewModel model)
         {
-            if (model.ExcelFile?.Length > 0)
+            model.ProcessedRows = new List<UserViewModel.RowResult>();
+
+            if (model.ExcelFile == null || model.ExcelFile.Length == 0)
             {
-                using var stream = model.ExcelFile.OpenReadStream();
-                using var package = new ExcelPackage(stream);
-                var worksheet = package.Workbook.Worksheets[0];
-                var rowCount = worksheet.Dimension?.Rows ?? 0;
+                TempData["Error"] = "Please select a valid Excel file.";
+                return View(model);
+            }
 
-                for (int row = 2; row <= rowCount + 1; row++)
+            var usersToInvite = new List<(string Email, User.Function UserType)>();
+            var seenEmails = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            int importCount = 0;
+
+            using var stream = model.ExcelFile.OpenReadStream();
+            using var package = new ExcelPackage(stream);
+            var worksheet = package.Workbook.Worksheets[0];
+            var rowCount = worksheet.Dimension?.Rows ?? 0;
+            await using var transaction = await _unitOfWork.BeginTransactionAsync();
+
+            // First pass: Validate and collect
+            for (int row = 2; row <= rowCount; row++)
+            {
+                var email = worksheet.Cells[row, 1].Value?.ToString()?.Trim();
+                var userTypeStr = worksheet.Cells[row, 2].Value?.ToString()?.Trim();
+                var result = new UserViewModel.RowResult { RowNumber = row };
+
+                // Validate email
+                if (string.IsNullOrEmpty(email))
                 {
-                    var email = worksheet.Cells[row, 1].Value?.ToString()?.Trim();
-                    var userTypeStr = worksheet.Cells[row, 2].Value?.ToString()?.Trim();
+                    result.IsSuccess = false;
+                    result.Message = "Invalid email address";
+                    model.ProcessedRows.Add(result);
+                    continue;
+                }
 
-                    var result = new BulkInviteViewModel.InviteResult
-                    {
-                        Email = email ?? string.Empty,
-                        UserType = Enum.TryParse<User.Function>(userTypeStr, out var type) ? type : Models.User.Function.Student
-                    };
+                // Validate user type
+                if (!Enum.TryParse<User.Function>(userTypeStr, out var userType) ||
+                    !Enum.IsDefined(typeof(User.Function), userType))
+                {
+                    result.IsSuccess = false;
+                    result.Message = $"Invalid user type '{userTypeStr}' in row {row}.";
+                    model.ProcessedRows.Add(result);
+                    continue;
+                }
 
-                    if (string.IsNullOrEmpty(email))
+                // Check for duplicate in current batch
+                if (!seenEmails.Add(email))
+                {
+                    result.IsSuccess = false;
+                    result.Message = $"Duplicate email '{email}' in the import file.";
+                    model.ProcessedRows.Add(result);
+                    continue;
+                }
+
+                // Check for existing user in database
+                var existingUser = await _userManager.FindByEmailAsync(email);
+                if (existingUser != null)
+                {
+                    result.IsSuccess = false;
+                    result.Message = "User already exists";
+                    model.ProcessedRows.Add(result);
+                    continue;
+                }
+
+                var token = Guid.NewGuid().ToString();
+                var user = new User
+                {
+                    Email = email,
+                    Name = "temp",
+                    Surname = "temp",
+                    UserName = email,
+                    _accountStatus = Models.User.AccountStatus.PendingActivation,
+                    RegistrationToken = token,
+                    _function = userType
+                }; 
+                try
+                {
+
+                    var userResult = await _userManager.CreateAsync(user, Guid.NewGuid().ToString());
+                    if (!userResult.Succeeded)
                     {
                         result.IsSuccess = false;
-                        result.Message = "Invalid email address";
-                        model.ProcessedInvites.Add(result);
+                        result.Message = "Error while creating user: " + string.Join(", ", userResult.Errors.Select(e => e.Description));
+                        model.ProcessedRows.Add(result);
                         continue;
                     }
 
-                    var existingUser = await _userManager.FindByEmailAsync(email);
-                    if (existingUser != null)
+                    switch (userType)
                     {
-                        result.IsSuccess = false;
-                        result.Message = "User already exists";
-                        model.ProcessedInvites.Add(result);
-                        continue;
-                    }
-
-                    await using var transaction = await _unitOfWork.BeginTransactionAsync();
-                    try
-                    {
-                        var token = Guid.NewGuid().ToString();
-                        var user = new User
-                        {
-                            Email = result.Email,
-                            Name = "temp",
-                            Surname = "temp",
-                            UserName = result.Email,
-                            _accountStatus = Models.User.AccountStatus.PendingActivation,
-                            RegistrationToken = token,
-                            _function = result.UserType
-                        };
-
-                        var userResult = await _userManager.CreateAsync(user, Guid.NewGuid().ToString());
-                        if (!userResult.Succeeded)
-                        {
-                            result.IsSuccess = false;
-                            result.Message = "Error while creating user: " + string.Join(", ", userResult.Errors.Select(e => e.Description));
-                            await transaction.RollbackAsync();
-                            model.ProcessedInvites.Add(result);
-                            continue;
-                        }
-
-                        bool relatedEntityCreated = false;
-                        if (result.UserType == Models.User.Function.Student)
-                        {
+                        case Models.User.Function.Student:
+                            await _userManager.AddToRoleAsync(user, UserRoles.Student);
                             var student = new Student
                             {
                                 UserId = user.Id,
                                 RegistrationNumber = _regNumberGenerator.GenerateUniqueRegistrationNumber(),
+                                RegisteredOn = DateTime.Now
                             };
                             await _unitOfWork.Students.AddAsync(student);
-                            relatedEntityCreated = await _unitOfWork.SaveChangesAsync() > 0;
-                        }
-                        else if (result.UserType == Models.User.Function.Teacher)
-                        {
-                            var teacher = new Teacher { UserId = user.Id };
+                            break;
+                        case Models.User.Function.Teacher:
+                            await _userManager.AddToRoleAsync(user, UserRoles.Teacher);
+                            var teacher = new Teacher
+                            {
+                                UserId = user.Id,
+                                RegisteredOn = DateTime.Now
+                            };
                             await _unitOfWork.Teachers.AddAsync(teacher);
-                            relatedEntityCreated = await _unitOfWork.SaveChangesAsync() > 0;
-                        }
-                        if (!relatedEntityCreated)
-                        {
-                            await transaction.RollbackAsync();
-                            result.IsSuccess = false;
-                            result.Message = "Error while creating related entity (student/teacher).";
-                            model.ProcessedInvites.Add(result);
-                            continue;
-                        }
-
-                        var invitationSent = await SendInvitationEmailAsync(user.Email, user.RegistrationToken);
-                        if (invitationSent)
-                        {
-                            await transaction.CommitAsync();
-                            result.IsSuccess = true;
-                            result.Message = "Invitation sent successfully";
-                        }
-                        else
-                        {
-                            await transaction.RollbackAsync();
-                            result.IsSuccess = false;
-                            result.Message = "Error sending invitation email.";
-                        }
+                            break;
                     }
-                    catch (Exception ex)
+
+                    await _unitOfWork.SaveChangesAsync();
+
+                    var invitationSent = await SendInvitationEmailAsync(user.Email, user.RegistrationToken);
+                    if (invitationSent)
                     {
-                        await transaction.RollbackAsync();
-                        result.IsSuccess = false;
-                        result.Message = "Error processing invitation: " + ex.Message;
+                        result.IsSuccess = true;
+                        result.Message = "Invitation sent successfully";
+                        model.ProcessedRows.Add(result);
+                        importCount++;
                     }
-
-                    model.ProcessedInvites.Add(result);
+                    else
+                    {
+                        result.IsSuccess = false;
+                        result.Message = "Error sending invitation email.";
+                        model.ProcessedRows.Add(result);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    result.IsSuccess = false;
+                    result.Message = "Error processing invitation: " + ex.Message;
+                    model.ProcessedRows.Add(result);
                 }
             }
-            return View(model);
+            if (importCount > 0)
+            {
+                await _unitOfWork.SaveChangesAsync();
+                await transaction.CommitAsync();
+                TempData["Success"] = $"{importCount} subjects imported successfully.";
+            }
+            else
+            {
+                await transaction.RollbackAsync();
+                TempData["Error"] = "No valid subjects found to import.";
+            }
+            var usersViewModel = new UsersViewModel
+            {
+                Users = await _unitOfWork.Users.GetAllViewModelsAsync(),
+                ImportResults = model.ProcessedRows
+            };
+
+            return View("Users", usersViewModel);
         }
+
         [HttpGet]
         public async Task<IActionResult> TimeTables()
         {
@@ -565,7 +601,7 @@ namespace StudentPortal.Controllers
         [HttpGet]
         public IActionResult InviteUser()
         {
-            return View(new InviteUserViewModel());
+            return View(new UserViewModel());
         }
 
         [HttpGet]
@@ -667,6 +703,8 @@ namespace StudentPortal.Controllers
                 using var package = new ExcelPackage(stream);
                 var worksheet = package.Workbook.Worksheets[0];
 
+                var seenKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
                 if (worksheet == null)
                 {
                     TempData["Error"] = "No worksheet found in the Excel file.";
@@ -682,8 +720,17 @@ namespace StudentPortal.Controllers
                     try
                     {
                         string departmentCode = worksheet.Cells[row, 1].Value?.ToString()?.Trim() ?? string.Empty;
-                        string subjectCode = worksheet.Cells[row, 2].Value?.ToString()?.Trim() ?? string.Empty;
-                        bool isLab = bool.TryParse(worksheet.Cells[row, 3].Value?.ToString(), out var lab) && lab;
+                        string subjectCode = worksheet.Cells[row, 2].Value?.ToString()?.Trim() ?? string.Empty; 
+                        bool isLab = false;
+                        var isLabCell = worksheet.Cells[row, 3].Value?.ToString()?.Trim();
+                        if (int.TryParse(isLabCell, out int isLabInt))
+                        {
+                            isLab = isLabInt == 1;
+                        }
+                        else if (bool.TryParse(isLabCell, out var isLabBool))
+                        {
+                            isLab = isLabBool;
+                        }
                         int? labTeacherId = int.TryParse(worksheet.Cells[row, 4].Value?.ToString(), out var lt) ? lt : (int?)null;
                         string weekday = worksheet.Cells[row, 5].Value?.ToString()?.Trim() ?? string.Empty;
                         string startTimeStr = worksheet.Cells[row, 6].Value?.ToString()?.Trim() ?? string.Empty;
@@ -697,6 +744,35 @@ namespace StudentPortal.Controllers
                         {
                             result.IsSuccess = false;
                             result.Message = "Required fields are missing.";
+                            model.ProcessedRows.Add(result);
+                            continue;
+                        }
+                        if (labTeacherId.HasValue)
+                        {
+                            var labTeacher = await _unitOfWork.Teachers.GetTeacherByIdAsync(labTeacherId.Value);
+                            if (labTeacher == null)
+                            {
+                                result.IsSuccess = false;
+                                result.Message = $"Lab Teacher ID '{labTeacherId.Value}' does not exist.";
+                                model.ProcessedRows.Add(result);
+                                continue;
+                            }
+                        }
+                        var department = await _unitOfWork.Departments.GetByCodeAsync(departmentCode);
+                        if (department == null)
+                        {
+                            result.IsSuccess = false;
+                            result.Message = $"Department code '{departmentCode}' does not exist.";
+                            model.ProcessedRows.Add(result);
+                            continue;
+                        }
+
+                        // Check if subjectCode exists
+                        var subject = await _unitOfWork.Subjects.GetByCodeAsync(subjectCode);
+                        if (subject == null)
+                        {
+                            result.IsSuccess = false;
+                            result.Message = $"Subject code '{subjectCode}' does not exist.";
                             model.ProcessedRows.Add(result);
                             continue;
                         }
@@ -768,7 +844,23 @@ namespace StudentPortal.Controllers
                             LabTeacherId = labTeacherId,
                             Specialization = specialization
                         };
-
+                        string compositeKey = $"{departmentCode}|{year}|{semester}|{subjectCode}|{weekday}|{startTime}|{endTime}";
+                        if (!seenKeys.Add(compositeKey))
+                        {
+                            result.IsSuccess = false;
+                            result.Message = "Duplicate timetable entry in the import file.";
+                            model.ProcessedRows.Add(result);
+                            continue;
+                        }
+                        var existing = await _unitOfWork.TimeTables.GetTimeTableByPKAsync(departmentCode, year, semester, 
+                                                                                            subjectCode, weekday, startTime, endTime);
+                        if (existing != null)
+                        {
+                            result.IsSuccess = false;
+                            result.Message = "Timetable entry already exists.";
+                            model.ProcessedRows.Add(result);
+                            continue;
+                        }
                         await _unitOfWork.TimeTables.AddAsync(timeTable);
                         importCount++;
                         result.IsSuccess = true;
@@ -778,6 +870,7 @@ namespace StudentPortal.Controllers
                     {
                         result.IsSuccess = false;
                         result.Message = $"Error: {ex.Message}";
+                        continue;
                     }
                     model.ProcessedRows.Add(result);
                 }
@@ -807,6 +900,125 @@ namespace StudentPortal.Controllers
             };
 
             return View("TimeTables", viewModel);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ImportDepartments(DepartmentViewModel model)
+        {
+            var file = Request.Form.Files.FirstOrDefault();
+            if (file == null || file.Length == 0)
+            {
+                TempData["Error"] = "Please select a valid Excel file.";
+                return RedirectToAction("Departments");
+            }
+
+            var seenCodes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            model.ProcessedRows = new List<DepartmentViewModel.RowResult>();
+            int importCount = 0;
+
+            try
+            {
+                await using var transaction = await _unitOfWork.BeginTransactionAsync();
+                using var stream = file.OpenReadStream();
+                using var package = new OfficeOpenXml.ExcelPackage(stream);
+                var worksheet = package.Workbook.Worksheets[0];
+
+                if (worksheet == null)
+                {
+                    TempData["Error"] = "No worksheet found in the Excel file.";
+                    return RedirectToAction("Departments");
+                }
+
+                var rowCount = worksheet.Dimension?.Rows ?? 0;
+
+                for (int row = 2; row <= rowCount; row++)
+                {
+                    var result = new DepartmentViewModel.RowResult { RowNumber = row };
+                    string departmentCode = worksheet.Cells[row, 1].Value?.ToString()?.Trim() ?? string.Empty;
+                    string departmentName = worksheet.Cells[row, 2].Value?.ToString()?.Trim() ?? string.Empty;
+                    string departmentHeadStr = worksheet.Cells[row, 3].Value?.ToString()?.Trim() ?? string.Empty;
+                    string phone = worksheet.Cells[row, 4].Value?.ToString()?.Trim() ?? string.Empty;
+                    if (string.IsNullOrEmpty(departmentCode) || string.IsNullOrEmpty(departmentName) ||
+                       string.IsNullOrEmpty(departmentHeadStr) || string.IsNullOrEmpty(phone))
+                    {
+                        result.IsSuccess = false;
+                        result.Message = "Required fields are missing.";
+                        model.ProcessedRows.Add(result);
+                        continue;
+                    }
+
+                    // Check for duplicate in current batch
+                    if (!seenCodes.Add(departmentCode))
+                    {
+                        result.IsSuccess = false;
+                        result.Message = $"Duplicate department code '{departmentCode}' in the import file.";
+                        model.ProcessedRows.Add(result);
+                        continue;
+                    }
+
+                    // Check for duplicate in database
+                    if (await _unitOfWork.Departments.ExistsAsync(departmentCode))
+                    {
+                        result.IsSuccess = false;
+                        result.Message = $"Department code '{departmentCode}' already exists.";
+                        model.ProcessedRows.Add(result);
+                        continue;
+                    }
+
+                    int? departmentHeadId = null;
+                    if (int.TryParse(departmentHeadStr, out int parsedHeadId))
+                    {
+                        var teacher = await _unitOfWork.Teachers.GetTeacherByIdAsync(parsedHeadId);
+                        if (teacher == null)
+                        {
+                            result.IsSuccess = false;
+                            result.Message = $"Department head with ID '{parsedHeadId}' does not exist.";
+                            model.ProcessedRows.Add(result);
+                            continue;
+                        }
+                        departmentHeadId = parsedHeadId;
+                    }
+
+                    var department = new Department
+                    {
+                        DepartmentCode = departmentCode,
+                        DepartmentName = departmentName,
+                        DepartmentHeadId = departmentHeadId,
+                        Phone = phone
+                    };
+
+                    await _unitOfWork.Departments.AddAsync(department);
+                    importCount++;
+                    result.IsSuccess = true;
+                    result.Message = $"Department added successfully.";
+                    model.ProcessedRows.Add(result);
+                }
+
+                if (importCount > 0)
+                {
+                    await _unitOfWork.SaveChangesAsync();
+                    await transaction.CommitAsync();
+                    TempData["Success"] = $"{importCount} departments imported successfully.";
+                }
+                else
+                {
+                    await transaction.RollbackAsync();
+                    TempData["Error"] = "No valid departments found to import.";
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Import failed: " + ex.Message;
+            }
+
+            var departments = await _unitOfWork.Departments.GetAllViewModelsAsync();
+            var viewModel = new DepartmentsViewModel
+            {
+                Department = departments,
+                ImportResults = model.ProcessedRows
+            };
+
+            return View("Departments", viewModel);
         }
     }
 }

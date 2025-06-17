@@ -1,6 +1,7 @@
-﻿using StudentPortal.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using StudentPortal.Interfaces;
 using StudentPortal.Models;
-using Microsoft.EntityFrameworkCore;
+using StudentPortal.ViewModels.Admin;
 namespace StudentPortal.Repositories
 {
     public class UserRepository : IUserRepository
@@ -50,11 +51,28 @@ namespace StudentPortal.Repositories
             var user = _context.Users.FirstOrDefault(u => u.Email == email);
             return user?.Id.ToString() ?? string.Empty;
         }
-
         public string GetIdByRegistrationToken(string token)
         {
             var user = _context.Users.FirstOrDefault(u => u.RegistrationToken == token);
             return user?.Id.ToString() ?? string.Empty;
+        }
+        public async Task<List<UserViewModel>> GetAllViewModelsAsync()
+        {
+            return await _context.Users
+                .Select(s => new UserViewModel
+                {
+                    UserId = s.Id,
+                    UserName = s.UserName,
+                    Name = s.Name,
+                    Surname = s.Surname,
+                    City = s.City,
+                    County = s.County,
+                    Address = s.Address,
+                    CNP = s.CNP,
+                    Function = (UserFunction?)s._function,
+                    AccountStatus = (AccountStatus?)s._accountStatus
+                })
+                .ToListAsync();
         }
     }
 

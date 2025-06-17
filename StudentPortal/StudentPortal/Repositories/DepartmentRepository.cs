@@ -33,10 +33,17 @@ namespace StudentPortal.Repositories
         }
 
         public async Task<Department?> GetByCodeAsync(string departmentCode)
-            => await _context.Departments.FirstOrDefaultAsync(d => d.DepartmentCode == departmentCode);
+        {
+            var result = await _context.Departments.FirstOrDefaultAsync(d => d.DepartmentCode == departmentCode);
+            return result;
+        }
 
         public async Task<bool> ExistsAsync(string departmentCode)
-            => await _context.Departments.AnyAsync(d => d.DepartmentCode == departmentCode);
+        {
+            var result = await _context.Departments.AnyAsync(s => s.DepartmentCode == departmentCode);
+            return result;
+        }
+
         public bool SaveChanges()
         {
             return _context.SaveChanges() > 0;

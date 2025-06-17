@@ -1,4 +1,5 @@
 ﻿using StudentPortal.Models;
+using StudentPortal.ViewModels.Admin;
 namespace StudentPortal.Interfaces
 
 {
@@ -12,5 +13,6 @@ namespace StudentPortal.Interfaces
         bool SaveChanges();
         string GetIdByEmail(string email);
         string GetIdByRegistrationToken(string token);
+        Task<List<UserViewModel>> GetAllViewModelsAsync();
     }
 }

@@ -16,9 +16,9 @@ namespace StudentPortal.ViewModels.Admin
         public bool IsLab { get; set; }
         public string? CourseTeacherName { get; set; }
         public string? LabTeacherName { get; set; }
-        public int? LabTeacherId { get; set; }           // <-- Add this
-        public int? CourseTeacherId { get; set; }        // <-- Add this
-        public TimeOnly? StartTime { get; set; }         // <-- Add this
+        public int? LabTeacherId { get; set; }         
+        public int? CourseTeacherId { get; set; }       
+        public TimeOnly? StartTime { get; set; }         
         public TimeOnly? EndTime { get; set; }
         public IFormFile? ExcelFile { get; set; }
         public List<RowResult> ProcessedRows { get; set; } = new();
