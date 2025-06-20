@@ -41,5 +41,8 @@ namespace StudentPortal.Models
         [Range(0, 100, ErrorMessage = "Final Grade must be between 0 and 100.")]
         [Precision(5)]
         public decimal FinalGrade { get; set; } = 0.0m;
+
+        public int Year { get; set; } = 1;
+        public int Semester { get; set; } = 1; 
     }
 }

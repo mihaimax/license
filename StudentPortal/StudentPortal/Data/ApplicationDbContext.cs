@@ -17,6 +17,7 @@ public class ApplicationDbContext : IdentityDbContext<User>
     public DbSet<Assignment> Assignments { get; set; }
     public DbSet<TimeTable> TimeTables { get; set; }
     public DbSet<Submission> Submissions { get; set; }
+    public DbSet<Enrollment> Enrollments { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

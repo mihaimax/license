@@ -1,0 +1,77 @@
+﻿@model StudentPortal.ViewModels.Teacher.ManageSituationViewModel
+@{
+    ViewData["Title"] = "Modify Situation";
+    Layout = null;
+}
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Modify Situation - Maxiversity</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background: linear-gradient(135deg, #eafaf1, #cce8d8); }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center">
+    <div class="bg-white shadow-lg rounded-2xl p-8 w-full max-w-lg relative">
+        <a href="@Url.Action("ManageSituation", "Teacher")"
+           class="absolute top-4 right-4 text-gray-400 hover:text-green-600 text-2xl font-bold transition duration-200"
+           title="Close">
+            &times;
+        </a>
+        <h2 class="text-2xl font-semibold text-center text-green-700 mb-6">Modify Situation</h2>
+
+        <!-- Filter Form (GET) -->
+        <form asp-action="ModifySituation" method="get" class="flex flex-col gap-4 mb-6">
+            <div>
+                <label class="block text-gray-700 font-semibold mb-1">Subject Code</label>
+                <input name="subjectCode" value="@Model.SubjectCode" class="border rounded-md px-3 py-2 w-full" />
+            </div>
+            <div>
+                <input name="studentId" value="@Model.StudentId" class="border rounded-md px-3 py-2 w-full" type="number" hidden/>
+            </div>
+            <button type="submit"
+                    class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-md text-center transition duration-200">
+                Filter
+            </button>
+        </form>
+
+        <!-- Edit Form (POST) -->
+        <form asp-action="ModifySituation" method="post" class="flex flex-col gap-4">
+            <input type="hidden" asp-for="SubjectCode" />
+            <input type="hidden" asp-for="StudentId" />
+            <div>
+                <label asp-for="StudentId" class="block text-gray-700 font-semibold mb-1">Student ID</label>
+                <input value="@Model.StudentId" asp-for="StudentId" class="border rounded-md px-3 py-2 w-full bg-gray-100" type="number" readonly />
+            </div>
+            <div>
+                <label asp-for="AttendancePercentage" class="block text-gray-700 font-semibold mb-1">Attendance Percentage</label>
+                <input value="@Model.AttendancePercentage" name="AttendancePercentage" asp-for="AttendancePercentage" class="border rounded-md px-3 py-2 w-full" type="number" step="0.01" min="0" max="100" />
+            </div>
+            <div>
+                <label asp-for="ExamPercentage" class="block text-gray-700 font-semibold mb-1">Exam Percentage</label>
+                <input value="@Model.ExamPercentage" name="ExamPercentage" asp-for="ExamPercentage" class="border rounded-md px-3 py-2 w-full" type="number" step="0.01" min="0" max="100" />
+            </div>
+            <div>
+                <label asp-for="ProjectPercentage" class="block text-gray-700 font-semibold mb-1">Project Percentage</label>
+                <input value="@Model.ProjectPercentage" name="ProjectPercentage" asp-for="ProjectPercentage" class="border rounded-md px-3 py-2 w-full" type="number" step="0.01" min="0" max="100" />
+            </div>
+            <div>
+                <label asp-for="FinalGrade" class="block text-gray-700 font-semibold mb-1">Final Grade</label>
+                <input value="@Model.FinalGrade" name="FinalGrade" asp-for="FinalGrade" class="border rounded-md px-3 py-2 w-full" type="number" step="0.01" min="0" max="10" />
+            </div>
+            <div>
+                <label asp-for="Semester" class="block text-gray-700 font-semibold mb-1">Semester</label>
+                <input value="@Model.Semester" name="Semester" asp-for="Semester" class="border rounded-md px-3 py-2 w-full bg-gray-100" type="number" min="1" readonly />
+            </div>
+            <div>
+                <label asp-for="Year" class="block text-gray-700 font-semibold mb-1">Year</label>
+                <input value="@Model.Year" name="Year" asp-for="Year" class="border rounded-md px-3 py-2 w-full bg-gray-100" type="number" min="1" readonly />
+            </div>
+            <button type="submit"
+                    class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-md text-center transition duration-200 mt-4">
+                Save Changes
+            </button>
+        </form>
+    </div>
+</body>

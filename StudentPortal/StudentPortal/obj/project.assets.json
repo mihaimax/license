@@ -10341,23 +10341,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\merro\\.nuget\\packages\\": {},
+    "C:\\Users\\Eu\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\repos\\license\\StudentPortal\\StudentPortal\\StudentPortal.csproj",
+      "projectUniqueName": "C:\\Users\\Eu\\Source\\Repos\\license2\\StudentPortal\\StudentPortal\\StudentPortal.csproj",
       "projectName": "StudentPortal",
-      "projectPath": "D:\\repos\\license\\StudentPortal\\StudentPortal\\StudentPortal.csproj",
-      "packagesPath": "C:\\Users\\merro\\.nuget\\packages\\",
-      "outputPath": "D:\\repos\\license\\StudentPortal\\StudentPortal\\obj\\",
+      "projectPath": "C:\\Users\\Eu\\Source\\Repos\\license2\\StudentPortal\\StudentPortal\\StudentPortal.csproj",
+      "packagesPath": "C:\\Users\\Eu\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Eu\\Source\\Repos\\license2\\StudentPortal\\StudentPortal\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\merro\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Eu\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],

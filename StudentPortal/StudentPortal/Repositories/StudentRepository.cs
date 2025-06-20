@@ -32,5 +32,28 @@ namespace StudentPortal.Repositories
 
         public async Task<Student?> GetStudentByIdAsync(int id)
             => await _context.Students.FirstOrDefaultAsync(s => s.StudentId == id);
+
+        public async Task<int> GetStudentIdByUserNameAsync(string userName)
+        {
+            var student = await _context.Students
+                .FirstOrDefaultAsync(s => s.UserId == userName);
+            return student?.StudentId ?? 0;
+        }
+        public async Task<string> GETPDFFileNameAsync(string userName)
+        {
+            var student = await _context.Students
+                .FirstOrDefaultAsync(s => s.UserId == userName);
+            return student?.Specialization + "_" + student?.Year + "_" + student?.Semester + ".pdf" ?? string.Empty;
+        }
+        public async Task<IEnumerable<Student>> GetAllStudentsForSituationAsync(string specialization, int year, int semester)
+        {
+            return await _context.Students
+            .Include(s => s.User)
+            .Where(s =>
+                s.Specialization == specialization &&
+                s.Year == year &&
+                s.Semester == semester)
+            .ToListAsync();
+        }
     }
 }

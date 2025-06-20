@@ -251,6 +251,36 @@ namespace StudentPortal.Data.Migrations
                     b.ToTable("Departments");
                 });
 
+            modelBuilder.Entity("StudentPortal.Models.Enrollment", b =>
+                {
+                    b.Property<int>("EnrollmentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EnrollmentId"));
+
+                    b.Property<int>("Semester")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SubjectId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
+
+                    b.HasKey("EnrollmentId");
+
+                    b.HasIndex("StudentId");
+
+                    b.HasIndex("SubjectId");
+
+                    b.ToTable("Enrollments");
+                });
+
             modelBuilder.Entity("StudentPortal.Models.Situation", b =>
                 {
                     b.Property<string>("SubjectCode")
@@ -278,7 +308,13 @@ namespace StudentPortal.Data.Migrations
                         .HasPrecision(5)
                         .HasColumnType("decimal(5,2)");
 
+                    b.Property<int>("Semester")
+                        .HasColumnType("int");
+
                     b.Property<int>("TeacherId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Year")
                         .HasColumnType("int");
 
                     b.HasKey("SubjectCode", "StudentId");
@@ -307,8 +343,8 @@ namespace StudentPortal.Data.Migrations
                     b.Property<string>("RegistrationNumber")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Semester")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("Semester")
+                        .HasColumnType("int");
 
                     b.Property<string>("Specialization")
                         .HasColumnType("nvarchar(max)");
@@ -678,6 +714,25 @@ namespace StudentPortal.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("DepartmentHead");
+                });
+
+            modelBuilder.Entity("StudentPortal.Models.Enrollment", b =>
+                {
+                    b.HasOne("StudentPortal.Models.Student", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("StudentPortal.Models.Subject", "Subject")
+                        .WithMany()
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Student");
+
+                    b.Navigation("Subject");
                 });
 
             modelBuilder.Entity("StudentPortal.Models.Situation", b =>

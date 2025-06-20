@@ -17,87 +17,99 @@ build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = StudentPortal
 build_property.RootNamespace = StudentPortal
-build_property.ProjectDir = D:\repos\license\StudentPortal\StudentPortal\
+build_property.ProjectDir = C:\Users\Eu\Source\Repos\license2\StudentPortal\StudentPortal\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 8.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = D:\repos\license\StudentPortal\StudentPortal
+build_property.MSBuildProjectDirectory = C:\Users\Eu\Source\Repos\license2\StudentPortal\StudentPortal
 build_property._RazorSourceGeneratorDebug = 
 
-[D:/repos/license/StudentPortal/StudentPortal/Views/Account/LogIn.cshtml]
+[C:/Users/Eu/Source/Repos/license2/StudentPortal/StudentPortal/Views/Account/LogIn.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxMb2dJbi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/repos/license/StudentPortal/StudentPortal/Views/Account/Register.cshtml]
+[C:/Users/Eu/Source/Repos/license2/StudentPortal/StudentPortal/Views/Account/Register.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxSZWdpc3Rlci5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/repos/license/StudentPortal/StudentPortal/Views/Admin/AddDepartment.cshtml]
+[C:/Users/Eu/Source/Repos/license2/StudentPortal/StudentPortal/Views/Admin/AddDepartment.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cQWRkRGVwYXJ0bWVudC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/repos/license/StudentPortal/StudentPortal/Views/Admin/AddSubject.cshtml]
+[C:/Users/Eu/Source/Repos/license2/StudentPortal/StudentPortal/Views/Admin/AddSubject.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cQWRkU3ViamVjdC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/repos/license/StudentPortal/StudentPortal/Views/Admin/DepartmentCard.cshtml]
+[C:/Users/Eu/Source/Repos/license2/StudentPortal/StudentPortal/Views/Admin/DepartmentCard.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cRGVwYXJ0bWVudENhcmQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/repos/license/StudentPortal/StudentPortal/Views/Admin/Departments.cshtml]
+[C:/Users/Eu/Source/Repos/license2/StudentPortal/StudentPortal/Views/Admin/Departments.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cRGVwYXJ0bWVudHMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/repos/license/StudentPortal/StudentPortal/Views/Admin/Index.cshtml]
+[C:/Users/Eu/Source/Repos/license2/StudentPortal/StudentPortal/Views/Admin/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/repos/license/StudentPortal/StudentPortal/Views/Admin/InviteUser.cshtml]
+[C:/Users/Eu/Source/Repos/license2/StudentPortal/StudentPortal/Views/Admin/InviteUser.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cSW52aXRlVXNlci5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/repos/license/StudentPortal/StudentPortal/Views/Admin/SubjectCard.cshtml]
+[C:/Users/Eu/Source/Repos/license2/StudentPortal/StudentPortal/Views/Admin/SubjectCard.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cU3ViamVjdENhcmQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/repos/license/StudentPortal/StudentPortal/Views/Admin/Subjects.cshtml]
+[C:/Users/Eu/Source/Repos/license2/StudentPortal/StudentPortal/Views/Admin/Subjects.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cU3ViamVjdHMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/repos/license/StudentPortal/StudentPortal/Views/Admin/TimeTableDetails.cshtml]
+[C:/Users/Eu/Source/Repos/license2/StudentPortal/StudentPortal/Views/Admin/TimeTableDetails.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cVGltZVRhYmxlRGV0YWlscy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/repos/license/StudentPortal/StudentPortal/Views/Admin/TimeTables.cshtml]
+[C:/Users/Eu/Source/Repos/license2/StudentPortal/StudentPortal/Views/Admin/TimeTables.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cVGltZVRhYmxlcy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/repos/license/StudentPortal/StudentPortal/Views/Admin/UserCard.cshtml]
+[C:/Users/Eu/Source/Repos/license2/StudentPortal/StudentPortal/Views/Admin/UserCard.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cVXNlckNhcmQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/repos/license/StudentPortal/StudentPortal/Views/Admin/Users.cshtml]
+[C:/Users/Eu/Source/Repos/license2/StudentPortal/StudentPortal/Views/Admin/Users.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cVXNlcnMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/repos/license/StudentPortal/StudentPortal/Views/shared/Error.cshtml]
+[C:/Users/Eu/Source/Repos/license2/StudentPortal/StudentPortal/Views/shared/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3Ncc2hhcmVkXEVycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/repos/license/StudentPortal/StudentPortal/Views/shared/_Layout.cshtml]
+[C:/Users/Eu/Source/Repos/license2/StudentPortal/StudentPortal/Views/shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3Ncc2hhcmVkXF9MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/repos/license/StudentPortal/StudentPortal/Views/Student/Index.cshtml]
+[C:/Users/Eu/Source/Repos/license2/StudentPortal/StudentPortal/Views/Student/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3R1ZGVudFxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/repos/license/StudentPortal/StudentPortal/Views/Teacher/Index.cshtml]
+[C:/Users/Eu/Source/Repos/license2/StudentPortal/StudentPortal/Views/Student/Situation.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3R1ZGVudFxTaXR1YXRpb24uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Eu/Source/Repos/license2/StudentPortal/StudentPortal/Views/Teacher/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGVhY2hlclxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/repos/license/StudentPortal/StudentPortal/Views/_ViewStart.cshtml]
+[C:/Users/Eu/Source/Repos/license2/StudentPortal/StudentPortal/Views/Teacher/ManageSituation.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGVhY2hlclxNYW5hZ2VTaXR1YXRpb24uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Eu/Source/Repos/license2/StudentPortal/StudentPortal/Views/Teacher/ModifySituation.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGVhY2hlclxNb2RpZnlTaXR1YXRpb24uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Eu/Source/Repos/license2/StudentPortal/StudentPortal/Views/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 

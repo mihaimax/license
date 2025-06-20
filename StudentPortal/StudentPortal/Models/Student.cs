@@ -15,7 +15,7 @@ namespace StudentPortal.Models
         public string? RegistrationNumber { get; set; }
         public string? Specialization { get; set; }
         public int? Year { get; set; }
-        public string? Semester { get; set; }
+        public int? Semester { get; set; }
         public string? Group { get; set; }
         public DateTime? RegisteredOn { get; set; }
     }

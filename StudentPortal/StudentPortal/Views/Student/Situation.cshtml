@@ -1,0 +1,50 @@
+﻿@using StudentPortal.ViewModels.Student
+@model List<SituationViewModel>
+@{
+    ViewData["Title"] = "My Situation";
+    Layout = "_Layout";
+}
+
+<div class="bg-white shadow-lg rounded-2xl p-8 w-full max-w-5xl flex flex-col items-center mt-12">
+    <div class="w-full flex justify-between items-center mb-8">
+        <h2 class="text-2xl font-semibold text-green-700">My Situation</h2>
+    </div>
+    <div class="w-full overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead>
+                <tr>
+                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Year</th>
+                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Semester</th>
+                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Subject Code</th>
+                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Attendance %</th>
+                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Exam %</th>
+                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Project %</th>
+                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Final Grade</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var s in Model.OrderBy(x => x.Year).ThenBy(x => x.Semester))
+                    {
+                        <tr class="hover:bg-green-50">
+                            <td class="px-4 py-2">@s.Year</td>
+                            <td class="px-4 py-2">@s.Semester</td>
+                            <td class="px-4 py-2">@s.SubjectCode</td>
+                            <td class="px-4 py-2">@s.AttendancePercentage</td>
+                            <td class="px-4 py-2">@s.ExamPercentage</td>
+                            <td class="px-4 py-2">@s.ProjectPercentage</td>
+                            <td class="px-4 py-2">@s.FinalGrade</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7" class="px-4 py-4 text-center text-gray-500">No situation records found.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

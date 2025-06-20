@@ -1020,5 +1020,29 @@ namespace StudentPortal.Controllers
 
             return View("Departments", viewModel);
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UploadTimetable(PDFUploadModel model)
+        {
+            var file = Request.Form.Files.FirstOrDefault();
+            if (file == null || file.Length == 0)
+            {
+                TempData["Error"] = "Please select a valid Excel file.";
+                return RedirectToAction("Departments");
+            }
+
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "timetables");
+            Directory.CreateDirectory(uploadsFolder);
+
+            var filePath = Path.Combine(uploadsFolder, model.PDFFile.FileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await model.PDFFile.CopyToAsync(stream);
+            }
+
+            TempData["Success"] = "Timetable PDF uploaded successfully.";
+            return RedirectToAction("Index");
+        }
     }
 }

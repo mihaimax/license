@@ -8,5 +8,8 @@ namespace StudentPortal.Interfaces
         Task<Student?> GetStudentByIdAsync(int id);
         Task<bool> AddAsync(Student student);
         Task SaveChangesAsync();
+        Task<int> GetStudentIdByUserNameAsync(string userName);
+        Task<string> GETPDFFileNameAsync(string userName);
+        Task<IEnumerable<Student>> GetAllStudentsForSituationAsync(string specialization, int year, int semester);
     }
 }
