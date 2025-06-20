@@ -10,6 +10,7 @@ public interface IUnitOfWork
     IDepartmentRepository Departments { get; }
     ISubjectRepository Subjects { get; }
     ITimeTableRepository TimeTables { get; }
+    IEnrollmentRepository Enrollments { get; }
 
     Task<IDbContextTransaction> BeginTransactionAsync();
     Task<int> SaveChangesAsync();

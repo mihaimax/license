@@ -13,6 +13,7 @@ public class UnitOfWork : IUnitOfWork
     private readonly IDepartmentRepository _departments;
     private readonly ISubjectRepository _subjects;
     private readonly ITimeTableRepository _timeTables;
+    private readonly IEnrollmentRepository _enrollments;
 
     public IUserRepository Users => _users;
     public IStudentRepository Students => _students;
@@ -21,6 +22,8 @@ public class UnitOfWork : IUnitOfWork
     public ISubjectRepository Subjects => _subjects;
     public ITimeTableRepository TimeTables => _timeTables;
 
+    public IEnrollmentRepository Enrollments => _enrollments;
+
     public UnitOfWork(
         ApplicationDbContext dbContext,
         IUserRepository users,
@@ -28,7 +31,8 @@ public class UnitOfWork : IUnitOfWork
         ITeacherRepository teachers,
         IDepartmentRepository departments,
         ISubjectRepository subjects,
-        ITimeTableRepository timeTables)
+        ITimeTableRepository timeTables,
+        IEnrollmentRepository enrollments)
     {
         _dbContext = dbContext;
         _users = users;
@@ -37,6 +41,7 @@ public class UnitOfWork : IUnitOfWork
         _departments = departments;
         _subjects = subjects;
         _timeTables = timeTables;
+        _enrollments = enrollments;
     }
 
     public async Task<IDbContextTransaction> BeginTransactionAsync()

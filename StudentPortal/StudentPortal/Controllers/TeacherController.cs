@@ -195,7 +195,8 @@ namespace StudentPortal.Controllers
                 situation.Year = model.Year;
                 situation.TeacherId = teacher.TeacherId;
                 await _context.SaveChangesAsync();
-                ViewBag.SuccessMessage = "Situation updated successfully.";
+
+                TempData["Success"] = "Situation updated successfully.";
                 return View(model);
             }
             else

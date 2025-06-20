@@ -18,11 +18,23 @@
 </head>  
 <body class="min-h-screen flex flex-col items-center justify-center">  
     <div class="bg-white shadow-lg rounded-2xl p-8 w-full max-w-5xl flex flex-col items-center mt-12">
+        @if (TempData["Success"] != null)
+        {
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4 w-full text-center">
+                @TempData["Success"]
+            </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 w-full text-center">
+                @TempData["Error"]
+            </div>
+        }
         <div class="w-full flex justify-between items-center mb-8">
             <button type="button"
                     id="openImportModal"
                     class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-md transition duration-200">
-                Import Time Tables!!
+                Import Time Tables
             </button>
         </div>
         <div class="w-full overflow-x-auto">  

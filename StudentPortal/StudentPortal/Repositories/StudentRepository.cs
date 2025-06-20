@@ -21,6 +21,8 @@ namespace StudentPortal.Repositories
             await _context.Students.AddAsync(student);
             return await _context.SaveChangesAsync() > 0;
         }
+        public async Task<bool> ExistsAsync(int studentId)
+            => await _context.Students.AnyAsync(s => s.StudentId == studentId);
 
         public async Task SaveChangesAsync()
         {

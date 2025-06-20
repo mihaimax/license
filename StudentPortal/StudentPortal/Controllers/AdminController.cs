@@ -11,6 +11,7 @@ using StudentPortal.Classes;
 using static StudentPortal.Models.User;
 using static StudentPortal.ViewModels.Admin.TimeTableViewModel;
 using StudentPortal.Views.Admin;
+using Microsoft.IdentityModel.Tokens;
 
 namespace StudentPortal.Controllers
 {
@@ -23,6 +24,7 @@ namespace StudentPortal.Controllers
         private readonly IDepartmentRepository _departmentRepository;
         private readonly ISubjectRepository _subjectRepository;
         private readonly ITimeTableRepository _timeTableRepository;
+        private readonly IEnrollmentRepository _enrollmentRepository;
         private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;
         private readonly IConfiguration _configuration;
@@ -37,6 +39,7 @@ namespace StudentPortal.Controllers
             IDepartmentRepository departmentRepository,
             ISubjectRepository subjectRepository,
             ITimeTableRepository timeTableRepository,
+            IEnrollmentRepository enrollmentRepository,
             UserManager<User> userManager,
             SignInManager<User> signInManager,
             IConfiguration configuration,
@@ -53,6 +56,7 @@ namespace StudentPortal.Controllers
             _signInManager = signInManager;
             _configuration = configuration;
             _regNumberGenerator = regNumberGenerator;
+            _enrollmentRepository = enrollmentRepository;
         }
 
         public IActionResult Index()
@@ -84,7 +88,7 @@ namespace StudentPortal.Controllers
                         UserName = model.Email,
                         _accountStatus = Models.User.AccountStatus.PendingActivation,
                         RegistrationToken = token,
-                        _function = (User.Function?)model.Function 
+                        _function = (User.Function?)model.Function
                     };
 
                     var userResult = await _userManager.CreateAsync(user, Guid.NewGuid().ToString());
@@ -139,7 +143,7 @@ namespace StudentPortal.Controllers
                     {
                         await transaction.CommitAsync();
                         TempData["Success"] = "Invitation sent.";
-                        return View();
+                        return RedirectToAction("InviteUser");
                     }
                     else
                     {
@@ -182,7 +186,7 @@ namespace StudentPortal.Controllers
             if (model.ExcelFile == null || model.ExcelFile.Length == 0)
             {
                 TempData["Error"] = "Please select a valid Excel file.";
-                return View(model);
+                return View("Users", model);
             }
 
             var usersToInvite = new List<(string Email, User.Function UserType)>();
@@ -250,7 +254,7 @@ namespace StudentPortal.Controllers
                     _accountStatus = Models.User.AccountStatus.PendingActivation,
                     RegistrationToken = token,
                     _function = userType
-                }; 
+                };
                 try
                 {
 
@@ -376,7 +380,7 @@ namespace StudentPortal.Controllers
                 TempData["Success"] = "Department added successfully.";
                 return RedirectToAction("Departments");
             }
-            return View(model);
+            return View("Departments", model);
         }
 
         [HttpGet]
@@ -720,7 +724,7 @@ namespace StudentPortal.Controllers
                     try
                     {
                         string departmentCode = worksheet.Cells[row, 1].Value?.ToString()?.Trim() ?? string.Empty;
-                        string subjectCode = worksheet.Cells[row, 2].Value?.ToString()?.Trim() ?? string.Empty; 
+                        string subjectCode = worksheet.Cells[row, 2].Value?.ToString()?.Trim() ?? string.Empty;
                         bool isLab = false;
                         var isLabCell = worksheet.Cells[row, 3].Value?.ToString()?.Trim();
                         if (int.TryParse(isLabCell, out int isLabInt))
@@ -852,7 +856,7 @@ namespace StudentPortal.Controllers
                             model.ProcessedRows.Add(result);
                             continue;
                         }
-                        var existing = await _unitOfWork.TimeTables.GetTimeTableByPKAsync(departmentCode, year, semester, 
+                        var existing = await _unitOfWork.TimeTables.GetTimeTableByPKAsync(departmentCode, year, semester,
                                                                                             subjectCode, weekday, startTime, endTime);
                         if (existing != null)
                         {
@@ -1043,6 +1047,104 @@ namespace StudentPortal.Controllers
 
             TempData["Success"] = "Timetable PDF uploaded successfully.";
             return RedirectToAction("Index");
+        }
+        [HttpGet]
+        public async Task<IActionResult> Enrollments()
+        {
+            var enrollment = await _enrollmentRepository.GetAllViewModelsAsync();
+            var response = new EnrollmentsViewModel { Enrollment = enrollment };
+            return View(response);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ImportEnrollments(EnrollmentViewModel model)
+        {
+            model.ProcessedRows = new List<EnrollmentViewModel.RowResult>();
+
+            if (model.ExcelFile == null || model.ExcelFile.Length == 0)
+            {
+                TempData["Error"] = "Please select a valid Excel file.";
+                return View("Enrollments", model);
+            }
+
+            int importCount = 0;
+
+            using var stream = model.ExcelFile.OpenReadStream();
+            using var package = new ExcelPackage(stream);
+            var worksheet = package.Workbook.Worksheets[0];
+            var rowCount = worksheet.Dimension?.Rows ?? 0;
+
+            for (int row = 2; row <= rowCount; row++)
+            {
+                var studentId = Int32.Parse(worksheet.Cells[row, 1].Value?.ToString()?.Trim());
+                var subjectId = worksheet.Cells[row, 2].Value?.ToString()?.Trim();
+                var year = Int32.Parse(worksheet.Cells[row, 3].Value?.ToString()?.Trim());
+                var semester = Int32.Parse(worksheet.Cells[row, 4].Value?.ToString()?.Trim());
+                var result = new EnrollmentViewModel.RowResult { RowNumber = row };
+
+                if (studentId == 0 || subjectId.IsNullOrEmpty() || year == 0 || semester == 0)
+                {
+                    result.IsSuccess = false;
+                    result.Message = "All fields are required";
+                    model.ProcessedRows.Add(result);
+                    continue;
+                }
+
+                var existingEnrollment = await _unitOfWork.Enrollments.EnrollmentExists(studentId, subjectId, year, semester);
+                if (existingEnrollment)
+                {
+                    result.IsSuccess = false;
+                    result.Message = "Enrollment already exists";
+                    model.ProcessedRows.Add(result);
+                    continue;
+                }
+                var studentExists = await _unitOfWork.Students.ExistsAsync(studentId);
+                if (!studentExists)
+                {
+                    result.IsSuccess = false;
+                    result.Message = $"Student with ID {studentId} does not exist.";
+                    model.ProcessedRows.Add(result);
+                    continue;
+                }
+                var subjectExists = await _unitOfWork.Subjects.ExistsAsync(subjectId);
+                if (!subjectExists)
+                {
+                    result.IsSuccess = false;
+                    result.Message = $"Subject with ID {subjectId} does not exist.";
+                    model.ProcessedRows.Add(result);
+                    continue;
+                }
+
+                var enrollment = new Enrollment
+                {
+                    StudentId = studentId,
+                    SubjectId = subjectId,
+                    Year = year,
+                    Semester = semester
+                };
+                await _unitOfWork.Enrollments.AddAsync(enrollment);
+                await _unitOfWork.Enrollments.SaveChangesAsync();
+
+                importCount++;
+                result.IsSuccess = true;
+                result.Message = "Imported successfully.";
+                model.ProcessedRows.Add(result);
+            }
+            if (importCount > 0)
+            {
+                TempData["Success"] = $"{importCount} subjects imported successfully.";
+            }
+            else
+            {
+                TempData["Error"] = "No valid subjects found to import.";
+            }
+            var enrollmentsViewModel = new EnrollmentsViewModel
+            {
+                Enrollment = await _unitOfWork.Enrollments.GetAllViewModelsAsync(),
+                ImportResults = model.ProcessedRows
+            };
+
+            return View("Enrollments", enrollmentsViewModel);
         }
     }
 }

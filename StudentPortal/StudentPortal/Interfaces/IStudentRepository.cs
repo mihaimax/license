@@ -7,6 +7,7 @@ namespace StudentPortal.Interfaces
         Task<IEnumerable<Student>> GetAllStudentsAsync();
         Task<Student?> GetStudentByIdAsync(int id);
         Task<bool> AddAsync(Student student);
+        Task<bool> ExistsAsync(int studentId);
         Task SaveChangesAsync();
         Task<int> GetStudentIdByUserNameAsync(string userName);
         Task<string> GETPDFFileNameAsync(string userName);

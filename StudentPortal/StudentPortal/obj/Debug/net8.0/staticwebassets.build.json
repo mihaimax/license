@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "7T6jUQK3mSHPFgXLRxajgVsjP+h4xBaTwAjAmjAoF/k=",
+  "Hash": "+f3c3pk2FriqlVip1Cd5bqvkSMqLiJos0vwOo5obsug=",
   "Source": "StudentPortal",
   "BasePath": "_content/StudentPortal",
   "Mode": "Default",
@@ -2371,6 +2371,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\lib\\jquery-validation-unobtrusive\\LICENSE.txt"
+    },
+    {
+      "Identity": "C:\\Users\\Eu\\Source\\Repos\\license2\\StudentPortal\\StudentPortal\\wwwroot\\uploads\\timetables\\491216367_1337877770632241_7753990589321892790_n.pdf",
+      "SourceId": "StudentPortal",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Eu\\Source\\Repos\\license2\\StudentPortal\\StudentPortal\\wwwroot\\",
+      "BasePath": "_content/StudentPortal",
+      "RelativePath": "uploads/timetables/491216367_1337877770632241_7753990589321892790_n.pdf",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\timetables\\491216367_1337877770632241_7753990589321892790_n.pdf"
     },
     {
       "Identity": "C:\\Users\\Eu\\Source\\Repos\\license2\\StudentPortal\\StudentPortal\\wwwroot\\uploads\\timetables\\Cerere_Eliberare_Acte_18_06_2025_15_54.pdf",
